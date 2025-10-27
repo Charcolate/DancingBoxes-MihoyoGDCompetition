@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
+[RequireComponent(typeof(Rigidbody))]
 public class Projectile : MonoBehaviour
 {
     public bool destroyOnHit = true;
@@ -9,12 +10,19 @@ public class Projectile : MonoBehaviour
 
     private LineRenderer lineRenderer;
     private GoalManager goalManager;
+    private Rigidbody rb;
+
     private float recordInterval = 0.02f;
     private float timeSinceLastRecord;
+
+    private bool frozen = false;
+    private PhaseState lastKnownPhase;
 
     private void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
+        rb = GetComponent<Rigidbody>();
+
         lineRenderer.positionCount = 0;
         lineRenderer.widthMultiplier = 0.1f;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
@@ -25,11 +33,13 @@ public class Projectile : MonoBehaviour
     public void SetGoalManager(GoalManager manager)
     {
         goalManager = manager;
+        if (goalManager != null)
+            lastKnownPhase = goalManager.CurrentPhase;
     }
 
     private void Update()
     {
-        // Add trail points while projectile moves
+        // Record trail points
         timeSinceLastRecord += Time.deltaTime;
         if (timeSinceLastRecord >= recordInterval)
         {
@@ -38,19 +48,56 @@ public class Projectile : MonoBehaviour
             timeSinceLastRecord = 0f;
         }
 
-        // If ghost's sequence finished, clear the line
+        // Clear trail after ghost phase
         if (goalManager != null && goalManager.IsGhostSequenceFinished())
         {
             lineRenderer.positionCount = 0;
+        }
+
+        // Detect phase change
+        if (goalManager != null && lastKnownPhase != goalManager.CurrentPhase)
+        {
+            lastKnownPhase = goalManager.CurrentPhase;
+
+            // Unfreeze when Wanderer phase starts
+            if (goalManager.CurrentPhase == PhaseState.Wanderer && frozen)
+            {
+                UnfreezeProjectile();
+            }
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (goalManager == null)
+            return;
+
+        // Freeze during ghost phase
+        if (goalManager.CurrentPhase == PhaseState.Ghost)
+        {
+            if (!frozen)
+            {
+                frozen = true;
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.isKinematic = true;
+                rb.useGravity = false;
+            }
+            return;
+        }
+
+        // Normal behavior during wanderer phase
         if (hitEffectPrefab != null)
             Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
 
         if (destroyOnHit)
             Destroy(gameObject);
+    }
+
+    private void UnfreezeProjectile()
+    {
+        frozen = false;
+        rb.isKinematic = false;
+        rb.useGravity = true;
     }
 }
