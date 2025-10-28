@@ -4,116 +4,210 @@ using UnityEngine;
 
 public class GoalManager : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Phase Configuration")]
+    public List<GoalPhaseData> smallPhases = new List<GoalPhaseData>();
+
+    [Header("Characters")]
     public Transform ghost;
     public Transform wanderer;
-    public List<Transform> waypoints;
+
+    [Header("Projectile System")]
     public ProjectileSpawner projectileSpawner;
 
-    [Header("Settings")]
-    public float moveSpeed = 3f;
-    public float pauseDuration = 1f;
-    public float wandererDelayAfterGhost = 1f;
-    public int triggerWaypointIndex = 1;
+    [Header("Movement Settings")]
+    public float moveSpeed = 5f;
+    public float reachThreshold = 0.2f;
 
-    private Vector3 phaseStartPosition;
-    private bool sequenceRunning;
-    private bool ghostSequenceFinished;
+    [Header("Respawn Settings")]
+    public int maxRespawnsPerBigPhase = 3;
+
+    // Internal tracking
+    private int currentSmallPhaseIndex = 0;
+    private int respawnCount = 0;
+    private bool sequenceRunning = false;
+
+    // Track start positions
+    private Vector3 ghostStartPos;
+    private Vector3 wandererStartPos;
+    private Vector3 bigPhaseStartGhostPos;
+    private Vector3 bigPhaseStartWandererPos;
+
+    // Track active projectiles
+    private List<GameObject> activeProjectiles = new List<GameObject>();
 
     private void Start()
     {
-        if (waypoints.Count == 0)
+        if (ghost == null || wanderer == null)
         {
-            Debug.LogError("GoalManager: No waypoints assigned!");
+            Debug.LogError("GoalManager: Ghost or Wanderer not assigned!");
             return;
         }
 
-        phaseStartPosition = waypoints[0].position;
-        StartCoroutine(PlayGhostSequence());
+        if (smallPhases.Count == 0)
+        {
+            Debug.LogError("GoalManager: No small phases configured!");
+            return;
+        }
+
+        StartCoroutine(RunSequence());
     }
 
-    private IEnumerator PlayGhostSequence()
+    private IEnumerator RunSequence()
     {
         sequenceRunning = true;
-        ghostSequenceFinished = false;
 
-        for (int i = 0; i < waypoints.Count; i++)
+        while (currentSmallPhaseIndex < smallPhases.Count)
         {
-            yield return StartCoroutine(MoveToPoint(ghost, waypoints[i].position));
-            yield return new WaitForSeconds(pauseDuration);
-
-            // Fire projectile at chosen waypoint
-            if (i == triggerWaypointIndex && projectileSpawner != null)
+            GoalPhaseData phase = smallPhases[currentSmallPhaseIndex];
+            if (phase == null || phase.waypoints.Count == 0)
             {
-                projectileSpawner.SpawnOne(this);
+                currentSmallPhaseIndex++;
+                continue;
+            }
+
+            ghostStartPos = ghost.position;
+            wandererStartPos = wanderer.position;
+
+            if (currentSmallPhaseIndex % 5 == 0)
+            {
+                bigPhaseStartGhostPos = ghost.position;
+                bigPhaseStartWandererPos = wanderer.position;
+            }
+
+            // Ghost moves and fires projectiles slightly before waypoint
+            yield return StartCoroutine(MoveCharacterWithProjectiles(ghost, phase));
+
+            // Destroy active projectiles when Ghost finishes small phase
+            ClearProjectiles();
+
+            // Wanderer moves after Ghost
+            yield return StartCoroutine(MoveCharacterWithProjectiles(wanderer, phase));
+
+            currentSmallPhaseIndex++;
+
+            if (currentSmallPhaseIndex % 5 == 0)
+            {
+                respawnCount = 0;
+                Debug.Log("✅ Big phase completed — respawn accumulation reset.");
             }
         }
 
         sequenceRunning = false;
-        ghostSequenceFinished = true;
-
-        // Wait, then make wanderer follow
-        yield return new WaitForSeconds(wandererDelayAfterGhost);
-        StartCoroutine(PlayWandererSequence());
+        Debug.Log("🎯 All small phases complete.");
     }
 
-    private IEnumerator PlayWandererSequence()
+    private IEnumerator MoveCharacterWithProjectiles(Transform character, GoalPhaseData phase)
     {
-        for (int i = 0; i < waypoints.Count; i++)
+        foreach (PhaseWaypoint wp in phase.waypoints)
         {
-            yield return StartCoroutine(MoveToPoint(wanderer, waypoints[i].position));
-            yield return new WaitForSeconds(pauseDuration);
+            if (wp.waypointTransform == null) continue;
 
-            if (i == triggerWaypointIndex && projectileSpawner != null)
+            Vector3 target = wp.waypointTransform.position;
+            float leadDistance = moveSpeed * wp.leadTime;
+            bool projectileFired = false;
+
+            while (Vector3.Distance(character.position, target) > reachThreshold)
             {
-                projectileSpawner.SpawnOne(this);
+                float remainingDistance = Vector3.Distance(character.position, target);
+
+                // Fire projectiles slightly before reaching waypoint
+                if (wp.triggerProjectile && !projectileFired && remainingDistance <= leadDistance)
+                {
+                    FireProjectiles(character, wp);
+                    projectileFired = true;
+                }
+
+                character.position = Vector3.MoveTowards(character.position, target, moveSpeed * Time.deltaTime);
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(phase.pauseDuration);
+        }
+    }
+
+    private void FireProjectiles(Transform character, PhaseWaypoint wp)
+    {
+        bool showTrajectory = (character == ghost); // Only show when Ghost is moving
+
+        if (wp.customSpawnTransforms != null && wp.customSpawnTransforms.Count > 0)
+        {
+            for (int j = 0; j < wp.projectileCount && j < wp.customSpawnTransforms.Count; j++)
+            {
+                Transform spawnTransform = wp.customSpawnTransforms[j];
+                if (spawnTransform != null)
+                {
+                    GameObject proj = projectileSpawner.SpawnOne(this, spawnTransform.position, character.position);
+                    if (proj != null)
+                    {
+                        activeProjectiles.Add(proj);
+
+                        // Enable trajectory
+                        Projectile projScript = proj.GetComponent<Projectile>();
+                        if (projScript != null)
+                            projScript.showTrajectory = showTrajectory;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int j = 0; j < wp.projectileCount; j++)
+            {
+                GameObject proj = projectileSpawner.SpawnOne(this, projectileSpawner.spawnPoint.position, character.position);
+                if (proj != null)
+                {
+                    activeProjectiles.Add(proj);
+
+                    // Enable trajectory
+                    Projectile projScript = proj.GetComponent<Projectile>();
+                    if (projScript != null)
+                        projScript.showTrajectory = showTrajectory;
+                }
             }
         }
     }
 
-    private IEnumerator MoveToPoint(Transform target, Vector3 destination)
+    private void ClearProjectiles()
     {
-        while (Vector3.Distance(target.position, destination) > 0.05f)
+        foreach (GameObject proj in activeProjectiles)
         {
-            target.position = Vector3.MoveTowards(target.position, destination, moveSpeed * Time.deltaTime);
-            yield return null;
+            if (proj != null)
+                Destroy(proj);
         }
+        activeProjectiles.Clear();
     }
 
     public void ResetPhase()
     {
+        respawnCount++;
+        Debug.Log($"💥 Wanderer hit — respawn count: {respawnCount}");
+
+        // Destroy all active projectiles on screen
+        ClearProjectiles();
+
+        if (respawnCount < maxRespawnsPerBigPhase)
+        {
+            ghost.position = ghostStartPos;
+            wanderer.position = wandererStartPos;
+        }
+        else
+        {
+            int currentBigPhaseIndex = currentSmallPhaseIndex / 5;
+            currentSmallPhaseIndex = currentBigPhaseIndex * 5;
+            respawnCount = 0;
+
+            ghost.position = bigPhaseStartGhostPos;
+            wanderer.position = bigPhaseStartWandererPos;
+
+            Debug.Log($"🔁 Respawn limit reached — restarting big phase {currentBigPhaseIndex + 1}");
+        }
+
         StopAllCoroutines();
-        StartCoroutine(ResetAndRestart());
-    }
-
-    private IEnumerator ResetAndRestart()
-    {
-        ghost.position = phaseStartPosition;
-        wanderer.position = phaseStartPosition;
-        ghost.rotation = Quaternion.identity;
-        wanderer.rotation = Quaternion.identity;
-
-        yield return new WaitForSeconds(1f);
-        StartCoroutine(PlayGhostSequence());
+        StartCoroutine(RunSequence());
     }
 
     public bool IsGhostSequenceFinished()
     {
-        return ghostSequenceFinished;
+        return !sequenceRunning;
     }
-
-#if UNITY_EDITOR
-    private void OnDrawGizmos()
-    {
-        if (waypoints == null || waypoints.Count == 0) return;
-
-        Gizmos.color = Color.cyan;
-        for (int i = 0; i < waypoints.Count; i++)
-        {
-            Gizmos.DrawSphere(waypoints[i].position, 0.2f);
-            if (i < waypoints.Count - 1)
-                Gizmos.DrawLine(waypoints[i].position, waypoints[i + 1].position);
-        }
-    }
-#endif
 }
