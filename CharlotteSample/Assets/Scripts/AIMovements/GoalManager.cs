@@ -7,117 +7,116 @@ public class GoalManager : MonoBehaviour
     [Header("References")]
     public Transform ghost;
     public Transform wanderer;
-    public List<Transform> waypoints;
     public ProjectileSpawner projectileSpawner;
 
-    [Header("Settings")]
-    [Tooltip("Movement speed for both ghost and wanderer.")]
+    [Header("Phase Settings")]
+    public List<GoalPhase> phases; // all phases
+    private int currentPhaseIndex = 0;
+
+    [Header("Movement Settings")]
     public float moveSpeed = 3f;
-
-    [Tooltip("Pause at each waypoint before continuing.")]
-    public float pauseDuration = 1f;
-
-    [Tooltip("Delay before wanderer starts after ghost finishes.")]
     public float wandererDelayAfterGhost = 1f;
-
-    [Tooltip("Index of waypoint that triggers a projectile shot.")]
-    public int triggerWaypointIndex = 1;
-
-    [Tooltip("How many seconds before reaching the trigger waypoint the projectile should fire.")]
     public float fireLeadTime = 5f;
 
-    private Vector3 phaseStartPosition;
-    private bool sequenceRunning;
-    private bool ghostSequenceFinished;
-
-    // Current state of the system (Ghost phase or Wanderer phase)
     public PhaseState CurrentPhase { get; private set; } = PhaseState.Ghost;
+
+    private Vector3 phaseStartPosition;
+    private bool ghostSequenceFinished;
 
     private void Start()
     {
-        if (waypoints == null || waypoints.Count == 0)
+        if (phases == null || phases.Count == 0)
         {
-            Debug.LogError("GoalManager: No waypoints assigned!");
+            Debug.LogError("No phases assigned to GoalManager!");
             return;
         }
 
-        phaseStartPosition = waypoints[0].position;
-        StartCoroutine(PlayGhostSequence());
+        StartPhase(currentPhaseIndex);
     }
 
-    /// <summary>
-    /// Controls the movement sequence for the ghost.
-    /// </summary>
-    private IEnumerator PlayGhostSequence()
+    private void StartPhase(int phaseIndex)
     {
-        sequenceRunning = true;
-        ghostSequenceFinished = false;
-        CurrentPhase = PhaseState.Ghost;
-
-        for (int i = 0; i < waypoints.Count - 1; i++)
+        GoalPhase phase = phases[phaseIndex];
+        if (phase.waypoints == null || phase.waypoints.Count == 0)
         {
-            Vector3 start = waypoints[i].position;
-            Vector3 end = waypoints[i + 1].position;
+            Debug.LogError($"Phase {phaseIndex} has no waypoints!");
+            return;
+        }
+
+        phaseStartPosition = phase.waypoints[0].position;
+        ghost.position = phaseStartPosition;
+        wanderer.position = phaseStartPosition;
+
+        StartCoroutine(PlayGhostSequence(phase));
+    }
+
+    private IEnumerator PlayGhostSequence(GoalPhase phase)
+    {
+        CurrentPhase = PhaseState.Ghost;
+        ghostSequenceFinished = false;
+
+        for (int i = 0; i < phase.waypoints.Count - 1; i++)
+        {
+            Vector3 start = phase.waypoints[i].position;
+            Vector3 end = phase.waypoints[i + 1].position;
             float distanceToNext = Vector3.Distance(start, end);
             float travelTime = distanceToNext / moveSpeed;
 
-            // If the next waypoint is the trigger one, schedule an early shot.
-            if (i + 1 == triggerWaypointIndex && projectileSpawner != null)
+            if (i + 1 == phase.triggerWaypointIndex && projectileSpawner != null)
             {
                 float fireTime = Mathf.Max(travelTime - fireLeadTime, 0.1f);
                 StartCoroutine(FireBeforeTrigger(fireTime, end));
             }
 
             yield return StartCoroutine(MoveToPoint(ghost, end));
-            yield return new WaitForSeconds(pauseDuration);
+            yield return new WaitForSeconds(phase.pauseDuration);
         }
 
-        sequenceRunning = false;
         ghostSequenceFinished = true;
 
-        // Start wanderer sequence after delay
         yield return new WaitForSeconds(wandererDelayAfterGhost);
-        StartCoroutine(PlayWandererSequence());
+        StartCoroutine(PlayWandererSequence(phase));
     }
 
-    /// <summary>
-    /// Controls the movement sequence for the wanderer.
-    /// </summary>
-    private IEnumerator PlayWandererSequence()
+    private IEnumerator PlayWandererSequence(GoalPhase phase)
     {
         CurrentPhase = PhaseState.Wanderer;
 
-        for (int i = 0; i < waypoints.Count - 1; i++)
+        for (int i = 0; i < phase.waypoints.Count - 1; i++)
         {
-            Vector3 start = waypoints[i].position;
-            Vector3 end = waypoints[i + 1].position;
+            Vector3 start = phase.waypoints[i].position;
+            Vector3 end = phase.waypoints[i + 1].position;
             float distanceToNext = Vector3.Distance(start, end);
             float travelTime = distanceToNext / moveSpeed;
 
-            // If the next waypoint is the trigger one, schedule an early shot.
-            if (i + 1 == triggerWaypointIndex && projectileSpawner != null)
+            if (i + 1 == phase.triggerWaypointIndex && projectileSpawner != null)
             {
                 float fireTime = Mathf.Max(travelTime - fireLeadTime, 0.1f);
                 StartCoroutine(FireBeforeTrigger(fireTime, end));
             }
 
             yield return StartCoroutine(MoveToPoint(wanderer, end));
-            yield return new WaitForSeconds(pauseDuration);
+            yield return new WaitForSeconds(phase.pauseDuration);
+        }
+
+        // Phase complete — automatically start next phase
+        currentPhaseIndex++;
+        if (currentPhaseIndex < phases.Count)
+        {
+            StartPhase(currentPhaseIndex);
+        }
+        else
+        {
+            Debug.Log("All phases completed!");
         }
     }
 
-    /// <summary>
-    /// Waits for a specific amount of time, then fires a projectile toward a target position.
-    /// </summary>
     private IEnumerator FireBeforeTrigger(float waitTime, Vector3 targetPos)
     {
         yield return new WaitForSeconds(waitTime);
         projectileSpawner.SpawnOne(this, targetPos);
     }
 
-    /// <summary>
-    /// Moves a transform smoothly toward a destination.
-    /// </summary>
     private IEnumerator MoveToPoint(Transform target, Vector3 destination)
     {
         while (Vector3.Distance(target.position, destination) > 0.05f)
@@ -128,25 +127,18 @@ public class GoalManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Resets the system back to the start of the ghost phase.
+    /// Resets the current phase (used by Falling triggers or projectile hits)
     /// </summary>
     public void ResetPhase()
     {
         StopAllCoroutines();
-        StartCoroutine(ResetAndRestart());
+        StartPhase(currentPhaseIndex);
     }
 
-    private IEnumerator ResetAndRestart()
-    {
-        ghost.position = phaseStartPosition;
-        wanderer.position = phaseStartPosition;
-        ghost.rotation = Quaternion.identity;
-        wanderer.rotation = Quaternion.identity;
-
-        yield return new WaitForSeconds(1f);
-        StartCoroutine(PlayGhostSequence());
-    }
-
+    /// <summary>
+    /// Returns true if the ghost has finished its current phase sequence.
+    /// Used by Projectiles for trail clearing.
+    /// </summary>
     public bool IsGhostSequenceFinished()
     {
         return ghostSequenceFinished;
@@ -155,14 +147,18 @@ public class GoalManager : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        if (waypoints == null || waypoints.Count == 0) return;
+        if (phases == null || phases.Count == 0) return;
 
         Gizmos.color = Color.cyan;
-        for (int i = 0; i < waypoints.Count; i++)
+        foreach (var phase in phases)
         {
-            Gizmos.DrawSphere(waypoints[i].position, 0.2f);
-            if (i < waypoints.Count - 1)
-                Gizmos.DrawLine(waypoints[i].position, waypoints[i + 1].position);
+            if (phase.waypoints == null) continue;
+            for (int i = 0; i < phase.waypoints.Count; i++)
+            {
+                Gizmos.DrawSphere(phase.waypoints[i].position, 0.2f);
+                if (i < phase.waypoints.Count - 1)
+                    Gizmos.DrawLine(phase.waypoints[i].position, phase.waypoints[i + 1].position);
+            }
         }
     }
 #endif
