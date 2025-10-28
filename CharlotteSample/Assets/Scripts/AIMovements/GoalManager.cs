@@ -22,20 +22,18 @@ public class GoalManager : MonoBehaviour
     public int maxRespawnsPerBigPhase = 3;
 
     // Internal tracking
-    private int currentSmallPhaseIndex = 0;
-    private int respawnCount = 0;
-    private bool sequenceRunning = false;
+    protected int currentSmallPhaseIndex = 0;
+    protected int respawnCount = 0;
+    protected bool sequenceRunning = false;
 
-    // Track start positions
-    private Vector3 ghostStartPos;
-    private Vector3 wandererStartPos;
-    private Vector3 bigPhaseStartGhostPos;
-    private Vector3 bigPhaseStartWandererPos;
+    protected Vector3 ghostStartPos;
+    protected Vector3 wandererStartPos;
+    protected Vector3 bigPhaseStartGhostPos;
+    protected Vector3 bigPhaseStartWandererPos;
 
-    // Track active projectiles
-    private List<GameObject> activeProjectiles = new List<GameObject>();
+    protected List<GameObject> activeProjectiles = new List<GameObject>();
 
-    private void Start()
+    protected virtual void Start()
     {
         if (ghost == null || wanderer == null)
         {
@@ -52,7 +50,8 @@ public class GoalManager : MonoBehaviour
         StartCoroutine(RunSequence());
     }
 
-    private IEnumerator RunSequence()
+    // Make RunSequence protected virtual so it can be overridden
+    protected virtual IEnumerator RunSequence()
     {
         sequenceRunning = true;
 
@@ -74,10 +73,9 @@ public class GoalManager : MonoBehaviour
                 bigPhaseStartWandererPos = wanderer.position;
             }
 
-            // Ghost moves and fires projectiles slightly before waypoint
+            // Ghost moves first
             yield return StartCoroutine(MoveCharacterWithProjectiles(ghost, phase));
 
-            // Destroy active projectiles when Ghost finishes small phase
             ClearProjectiles();
 
             // Wanderer moves after Ghost
@@ -96,28 +94,32 @@ public class GoalManager : MonoBehaviour
         Debug.Log("🎯 All small phases complete.");
     }
 
-    private IEnumerator MoveCharacterWithProjectiles(Transform character, GoalPhaseData phase)
+    // Make MoveCharacterWithProjectiles protected virtual so it can be overridden
+    protected virtual IEnumerator MoveCharacterWithProjectiles(Transform character, GoalPhaseData phase)
     {
         foreach (PhaseWaypoint wp in phase.waypoints)
         {
             if (wp.waypointTransform == null) continue;
 
             Vector3 target = wp.waypointTransform.position;
-            float leadDistance = moveSpeed * wp.leadTime;
             bool projectileFired = false;
 
             while (Vector3.Distance(character.position, target) > reachThreshold)
             {
-                float remainingDistance = Vector3.Distance(character.position, target);
+                character.position = Vector3.MoveTowards(character.position, target, moveSpeed * Time.deltaTime);
 
                 // Fire projectiles slightly before reaching waypoint
-                if (wp.triggerProjectile && !projectileFired && remainingDistance <= leadDistance)
+                if (wp.triggerProjectile && !projectileFired)
                 {
-                    FireProjectiles(character, wp);
-                    projectileFired = true;
+                    float remainingDistance = Vector3.Distance(character.position, target);
+                    float leadDistance = moveSpeed * wp.leadTime;
+                    if (remainingDistance <= leadDistance)
+                    {
+                        FireProjectiles(character, wp);
+                        projectileFired = true;
+                    }
                 }
 
-                character.position = Vector3.MoveTowards(character.position, target, moveSpeed * Time.deltaTime);
                 yield return null;
             }
 
@@ -125,9 +127,10 @@ public class GoalManager : MonoBehaviour
         }
     }
 
-    private void FireProjectiles(Transform character, PhaseWaypoint wp)
+    // Make FireProjectiles protected so subclasses can call
+    protected void FireProjectiles(Transform character, PhaseWaypoint wp)
     {
-        bool showTrajectory = (character == ghost); // Only show when Ghost is moving
+        bool showTrajectory = (character == ghost);
 
         if (wp.customSpawnTransforms != null && wp.customSpawnTransforms.Count > 0)
         {
@@ -140,8 +143,6 @@ public class GoalManager : MonoBehaviour
                     if (proj != null)
                     {
                         activeProjectiles.Add(proj);
-
-                        // Enable trajectory
                         Projectile projScript = proj.GetComponent<Projectile>();
                         if (projScript != null)
                             projScript.showTrajectory = showTrajectory;
@@ -157,8 +158,6 @@ public class GoalManager : MonoBehaviour
                 if (proj != null)
                 {
                     activeProjectiles.Add(proj);
-
-                    // Enable trajectory
                     Projectile projScript = proj.GetComponent<Projectile>();
                     if (projScript != null)
                         projScript.showTrajectory = showTrajectory;
@@ -167,12 +166,11 @@ public class GoalManager : MonoBehaviour
         }
     }
 
-    private void ClearProjectiles()
+    protected void ClearProjectiles()
     {
         foreach (GameObject proj in activeProjectiles)
         {
-            if (proj != null)
-                Destroy(proj);
+            if (proj != null) Destroy(proj);
         }
         activeProjectiles.Clear();
     }
@@ -182,7 +180,6 @@ public class GoalManager : MonoBehaviour
         respawnCount++;
         Debug.Log($"💥 Wanderer hit — respawn count: {respawnCount}");
 
-        // Destroy all active projectiles on screen
         ClearProjectiles();
 
         if (respawnCount < maxRespawnsPerBigPhase)
