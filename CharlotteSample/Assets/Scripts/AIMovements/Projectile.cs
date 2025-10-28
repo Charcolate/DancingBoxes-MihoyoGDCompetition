@@ -1,74 +1,55 @@
-using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(LineRenderer))]
+[RequireComponent(typeof(Rigidbody))]
 public class Projectile : MonoBehaviour
 {
-    [Header("Settings")]
-    public bool destroyOnHit = true;
-    public GameObject hitEffectPrefab;
+    public bool freezeOnCollision = true;
+    public bool showTrajectory = true; // Only true for Ghost phase
 
-    [Header("Trail Settings")]
+    private Rigidbody rb;
     private LineRenderer lineRenderer;
     private float recordInterval = 0.02f;
-    private float timeSinceLastRecord;
+    private float timeSinceLastRecord = 0f;
 
-    [Header("References")]
-    private GoalManager goalManager;
-
-    private void Awake()
+    void Awake()
     {
-        lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.positionCount = 0;
-        lineRenderer.widthMultiplier = 0.1f;
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        lineRenderer.startColor = Color.cyan;
-        lineRenderer.endColor = new Color(0.2f, 0.8f, 1f, 0.3f);
-    }
+        rb = GetComponent<Rigidbody>();
 
-    public void SetGoalManager(GoalManager manager)
-    {
-        goalManager = manager;
+        if (showTrajectory)
+        {
+            lineRenderer = gameObject.AddComponent<LineRenderer>();
+            lineRenderer.positionCount = 0;
+            lineRenderer.widthMultiplier = 0.05f;
+            lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            lineRenderer.startColor = Color.cyan;
+            lineRenderer.endColor = new Color(0.2f, 0.8f, 1f, 0.3f);
+        }
     }
 
     private void Update()
     {
-        // Add trail points while projectile moves
-        timeSinceLastRecord += Time.deltaTime;
-        if (timeSinceLastRecord >= recordInterval)
+        if (showTrajectory && lineRenderer != null)
         {
-            lineRenderer.positionCount++;
-            lineRenderer.SetPosition(lineRenderer.positionCount - 1, transform.position);
-            timeSinceLastRecord = 0f;
-        }
-
-        // Clear trail if ghost sequence finished
-        if (goalManager != null && goalManager.IsGhostSequenceFinished())
-        {
-            lineRenderer.positionCount = 0;
+            timeSinceLastRecord += Time.deltaTime;
+            if (timeSinceLastRecord >= recordInterval)
+            {
+                lineRenderer.positionCount++;
+                lineRenderer.SetPosition(lineRenderer.positionCount - 1, transform.position);
+                timeSinceLastRecord = 0f;
+            }
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Only destroy if allowed
-        if (destroyOnHit)
+        if (freezeOnCollision)
         {
-            if (hitEffectPrefab != null)
-                Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
-
+            rb.linearVelocity = Vector3.zero;
+            rb.isKinematic = true;
+        }
+        else
+        {
             Destroy(gameObject);
         }
     }
-
-    #region Backward Compatibility for Multi-Phase GoalManager
-
-    public bool IsGhostSequenceFinished()
-    {
-        if (goalManager == null) return false;
-        return goalManager.IsGhostSequenceFinished();
-    }
-
-
-    #endregion
 }

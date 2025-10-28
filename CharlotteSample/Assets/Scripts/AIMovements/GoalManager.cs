@@ -4,162 +4,210 @@ using UnityEngine;
 
 public class GoalManager : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Phase Configuration")]
+    public List<GoalPhaseData> smallPhases = new List<GoalPhaseData>();
+
+    [Header("Characters")]
     public Transform ghost;
     public Transform wanderer;
+
+    [Header("Projectile System")]
     public ProjectileSpawner projectileSpawner;
 
-    [Header("Phase Settings")]
-    public List<GoalPhase> phases; // all phases
-    private int currentPhaseIndex = 0;
-
     [Header("Movement Settings")]
-    public float moveSpeed = 3f;
-    public float wandererDelayAfterGhost = 1f;
-    public float fireLeadTime = 5f;
+    public float moveSpeed = 5f;
+    public float reachThreshold = 0.2f;
 
-    public PhaseState CurrentPhase { get; private set; } = PhaseState.Ghost;
+    [Header("Respawn Settings")]
+    public int maxRespawnsPerBigPhase = 3;
 
-    private Vector3 phaseStartPosition;
-    private bool ghostSequenceFinished;
+    // Internal tracking
+    private int currentSmallPhaseIndex = 0;
+    private int respawnCount = 0;
+    private bool sequenceRunning = false;
+
+    // Track start positions
+    private Vector3 ghostStartPos;
+    private Vector3 wandererStartPos;
+    private Vector3 bigPhaseStartGhostPos;
+    private Vector3 bigPhaseStartWandererPos;
+
+    // Track active projectiles
+    private List<GameObject> activeProjectiles = new List<GameObject>();
 
     private void Start()
     {
-        if (phases == null || phases.Count == 0)
+        if (ghost == null || wanderer == null)
         {
-            Debug.LogError("No phases assigned to GoalManager!");
+            Debug.LogError("GoalManager: Ghost or Wanderer not assigned!");
             return;
         }
 
-        StartPhase(currentPhaseIndex);
-    }
-
-    private void StartPhase(int phaseIndex)
-    {
-        GoalPhase phase = phases[phaseIndex];
-        if (phase.waypoints == null || phase.waypoints.Count == 0)
+        if (smallPhases.Count == 0)
         {
-            Debug.LogError($"Phase {phaseIndex} has no waypoints!");
+            Debug.LogError("GoalManager: No small phases configured!");
             return;
         }
 
-        phaseStartPosition = phase.waypoints[0].position;
-        ghost.position = phaseStartPosition;
-        wanderer.position = phaseStartPosition;
-
-        StartCoroutine(PlayGhostSequence(phase));
+        StartCoroutine(RunSequence());
     }
 
-    private IEnumerator PlayGhostSequence(GoalPhase phase)
+    private IEnumerator RunSequence()
     {
-        CurrentPhase = PhaseState.Ghost;
-        ghostSequenceFinished = false;
+        sequenceRunning = true;
 
-        for (int i = 0; i < phase.waypoints.Count - 1; i++)
+        while (currentSmallPhaseIndex < smallPhases.Count)
         {
-            Vector3 start = phase.waypoints[i].position;
-            Vector3 end = phase.waypoints[i + 1].position;
-            float distanceToNext = Vector3.Distance(start, end);
-            float travelTime = distanceToNext / moveSpeed;
-
-            if (i + 1 == phase.triggerWaypointIndex && projectileSpawner != null)
+            GoalPhaseData phase = smallPhases[currentSmallPhaseIndex];
+            if (phase == null || phase.waypoints.Count == 0)
             {
-                float fireTime = Mathf.Max(travelTime - fireLeadTime, 0.1f);
-                StartCoroutine(FireBeforeTrigger(fireTime, end));
+                currentSmallPhaseIndex++;
+                continue;
             }
 
-            yield return StartCoroutine(MoveToPoint(ghost, end));
-            yield return new WaitForSeconds(phase.pauseDuration);
+            ghostStartPos = ghost.position;
+            wandererStartPos = wanderer.position;
+
+            if (currentSmallPhaseIndex % 5 == 0)
+            {
+                bigPhaseStartGhostPos = ghost.position;
+                bigPhaseStartWandererPos = wanderer.position;
+            }
+
+            // Ghost moves and fires projectiles slightly before waypoint
+            yield return StartCoroutine(MoveCharacterWithProjectiles(ghost, phase));
+
+            // Destroy active projectiles when Ghost finishes small phase
+            ClearProjectiles();
+
+            // Wanderer moves after Ghost
+            yield return StartCoroutine(MoveCharacterWithProjectiles(wanderer, phase));
+
+            currentSmallPhaseIndex++;
+
+            if (currentSmallPhaseIndex % 5 == 0)
+            {
+                respawnCount = 0;
+                Debug.Log("✅ Big phase completed — respawn accumulation reset.");
+            }
         }
 
-        ghostSequenceFinished = true;
-
-        yield return new WaitForSeconds(wandererDelayAfterGhost);
-        StartCoroutine(PlayWandererSequence(phase));
+        sequenceRunning = false;
+        Debug.Log("🎯 All small phases complete.");
     }
 
-    private IEnumerator PlayWandererSequence(GoalPhase phase)
+    private IEnumerator MoveCharacterWithProjectiles(Transform character, GoalPhaseData phase)
     {
-        CurrentPhase = PhaseState.Wanderer;
-
-        for (int i = 0; i < phase.waypoints.Count - 1; i++)
+        foreach (PhaseWaypoint wp in phase.waypoints)
         {
-            Vector3 start = phase.waypoints[i].position;
-            Vector3 end = phase.waypoints[i + 1].position;
-            float distanceToNext = Vector3.Distance(start, end);
-            float travelTime = distanceToNext / moveSpeed;
+            if (wp.waypointTransform == null) continue;
 
-            if (i + 1 == phase.triggerWaypointIndex && projectileSpawner != null)
+            Vector3 target = wp.waypointTransform.position;
+            float leadDistance = moveSpeed * wp.leadTime;
+            bool projectileFired = false;
+
+            while (Vector3.Distance(character.position, target) > reachThreshold)
             {
-                float fireTime = Mathf.Max(travelTime - fireLeadTime, 0.1f);
-                StartCoroutine(FireBeforeTrigger(fireTime, end));
+                float remainingDistance = Vector3.Distance(character.position, target);
+
+                // Fire projectiles slightly before reaching waypoint
+                if (wp.triggerProjectile && !projectileFired && remainingDistance <= leadDistance)
+                {
+                    FireProjectiles(character, wp);
+                    projectileFired = true;
+                }
+
+                character.position = Vector3.MoveTowards(character.position, target, moveSpeed * Time.deltaTime);
+                yield return null;
             }
 
-            yield return StartCoroutine(MoveToPoint(wanderer, end));
             yield return new WaitForSeconds(phase.pauseDuration);
         }
+    }
 
-        // Phase complete — automatically start next phase
-        currentPhaseIndex++;
-        if (currentPhaseIndex < phases.Count)
+    private void FireProjectiles(Transform character, PhaseWaypoint wp)
+    {
+        bool showTrajectory = (character == ghost); // Only show when Ghost is moving
+
+        if (wp.customSpawnTransforms != null && wp.customSpawnTransforms.Count > 0)
         {
-            StartPhase(currentPhaseIndex);
+            for (int j = 0; j < wp.projectileCount && j < wp.customSpawnTransforms.Count; j++)
+            {
+                Transform spawnTransform = wp.customSpawnTransforms[j];
+                if (spawnTransform != null)
+                {
+                    GameObject proj = projectileSpawner.SpawnOne(this, spawnTransform.position, character.position);
+                    if (proj != null)
+                    {
+                        activeProjectiles.Add(proj);
+
+                        // Enable trajectory
+                        Projectile projScript = proj.GetComponent<Projectile>();
+                        if (projScript != null)
+                            projScript.showTrajectory = showTrajectory;
+                    }
+                }
+            }
         }
         else
         {
-            Debug.Log("All phases completed!");
-        }
-    }
-
-    private IEnumerator FireBeforeTrigger(float waitTime, Vector3 targetPos)
-    {
-        yield return new WaitForSeconds(waitTime);
-        projectileSpawner.SpawnOne(this, targetPos);
-    }
-
-    private IEnumerator MoveToPoint(Transform target, Vector3 destination)
-    {
-        while (Vector3.Distance(target.position, destination) > 0.05f)
-        {
-            target.position = Vector3.MoveTowards(target.position, destination, moveSpeed * Time.deltaTime);
-            yield return null;
-        }
-    }
-
-    /// <summary>
-    /// Resets the current phase (used by Falling triggers or projectile hits)
-    /// </summary>
-    public void ResetPhase()
-    {
-        StopAllCoroutines();
-        StartPhase(currentPhaseIndex);
-    }
-
-    /// <summary>
-    /// Returns true if the ghost has finished its current phase sequence.
-    /// Used by Projectiles for trail clearing.
-    /// </summary>
-    public bool IsGhostSequenceFinished()
-    {
-        return ghostSequenceFinished;
-    }
-
-#if UNITY_EDITOR
-    private void OnDrawGizmos()
-    {
-        if (phases == null || phases.Count == 0) return;
-
-        Gizmos.color = Color.cyan;
-        foreach (var phase in phases)
-        {
-            if (phase.waypoints == null) continue;
-            for (int i = 0; i < phase.waypoints.Count; i++)
+            for (int j = 0; j < wp.projectileCount; j++)
             {
-                Gizmos.DrawSphere(phase.waypoints[i].position, 0.2f);
-                if (i < phase.waypoints.Count - 1)
-                    Gizmos.DrawLine(phase.waypoints[i].position, phase.waypoints[i + 1].position);
+                GameObject proj = projectileSpawner.SpawnOne(this, projectileSpawner.spawnPoint.position, character.position);
+                if (proj != null)
+                {
+                    activeProjectiles.Add(proj);
+
+                    // Enable trajectory
+                    Projectile projScript = proj.GetComponent<Projectile>();
+                    if (projScript != null)
+                        projScript.showTrajectory = showTrajectory;
+                }
             }
         }
     }
-#endif
+
+    private void ClearProjectiles()
+    {
+        foreach (GameObject proj in activeProjectiles)
+        {
+            if (proj != null)
+                Destroy(proj);
+        }
+        activeProjectiles.Clear();
+    }
+
+    public void ResetPhase()
+    {
+        respawnCount++;
+        Debug.Log($"💥 Wanderer hit — respawn count: {respawnCount}");
+
+        // Destroy all active projectiles on screen
+        ClearProjectiles();
+
+        if (respawnCount < maxRespawnsPerBigPhase)
+        {
+            ghost.position = ghostStartPos;
+            wanderer.position = wandererStartPos;
+        }
+        else
+        {
+            int currentBigPhaseIndex = currentSmallPhaseIndex / 5;
+            currentSmallPhaseIndex = currentBigPhaseIndex * 5;
+            respawnCount = 0;
+
+            ghost.position = bigPhaseStartGhostPos;
+            wanderer.position = bigPhaseStartWandererPos;
+
+            Debug.Log($"🔁 Respawn limit reached — restarting big phase {currentBigPhaseIndex + 1}");
+        }
+
+        StopAllCoroutines();
+        StartCoroutine(RunSequence());
+    }
+
+    public bool IsGhostSequenceFinished()
+    {
+        return !sequenceRunning;
+    }
 }

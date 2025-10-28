@@ -14,33 +14,23 @@ public class ProjectileSpawner : MonoBehaviour
             spawnPoint = transform;
     }
 
-    // Overload: spawns projectile toward a position instead of a fixed Transform
-    public void SpawnOne(GoalManager goalManager, Vector3 targetPosition)
+    // Returns the spawned GameObject for tracking
+    public GameObject SpawnOne(GoalManager goalManager, Vector3 spawnPosition, Vector3 targetPosition)
     {
-        if (projectilePrefab == null) return;
+        if (projectilePrefab == null) return null;
 
-        GameObject proj = Instantiate(projectilePrefab, spawnPoint.position, Quaternion.identity);
+        GameObject proj = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
         Rigidbody rb = proj.GetComponent<Rigidbody>();
-        Projectile projectileScript = proj.GetComponent<Projectile>();
 
-        if (rb == null) return;
+        if (rb == null) return null;
 
-        // Calculate ballistic direction
-        Vector3 dir = (targetPosition - spawnPoint.position);
-        float distance = dir.magnitude;
-        dir.Normalize();
-
-        // Add some arc height based on distance
-        float heightOffset = distance * 0.2f;
-        Vector3 velocity = dir * projectileSpeed + Vector3.up * heightOffset;
-
+        Vector3 dir = (targetPosition - spawnPosition).normalized;
+        rb.linearVelocity = dir * projectileSpeed;
         rb.useGravity = true;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        rb.linearVelocity = velocity;
-
-        if (projectileScript != null)
-            projectileScript.SetGoalManager(goalManager);
 
         Destroy(proj, projectileLifetime);
+
+        return proj;
     }
 }
