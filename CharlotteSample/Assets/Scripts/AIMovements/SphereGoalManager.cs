@@ -2,26 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Helper class for moving along a sphere surface
-public static class SphereMover
+public class SphereGoalManager : MonoBehaviour
 {
-    public static Vector3 MoveOnSphere(Vector3 currentPos, Vector3 targetPos, Vector3 sphereCenter, float radius, float step)
-    {
-        Vector3 dirCurrent = (currentPos - sphereCenter).normalized;
-        Vector3 dirTarget = (targetPos - sphereCenter).normalized;
+    [Header("Phase Configuration")]
+    public List<GoalPhaseData> smallPhases = new List<GoalPhaseData>();
 
-        float angle = Vector3.Angle(dirCurrent, dirTarget);
-        if (angle < 0.001f) return sphereCenter + dirTarget * radius;
+    [Header("Characters")]
+    public Transform wanderer;
 
-        float t = Mathf.Min(1f, step / angle);
-        Vector3 newDir = Vector3.Slerp(dirCurrent, dirTarget, t).normalized;
-
-        return sphereCenter + newDir * radius;
-    }
-}
-
-public class SphereGoalManager : GoalManager
-{
     [Header("Sphere Settings")]
     public Transform sphereCenterTransform;
     public float sphereRadius = 10f;
@@ -29,79 +17,110 @@ public class SphereGoalManager : GoalManager
     [Header("Optional")]
     public bool snapWaypointsToSphere = true;
 
-    private void Awake()
+    [Header("Projectile System")]
+    public ProjectileSpawner projectileSpawner;
+
+    [Header("Movement Settings")]
+    public float moveSpeed = 5f;
+    public float reachThreshold = 0.2f;
+
+    [Header("Respawn Settings")]
+    public int maxRespawnsPerBigPhase = 3;
+
+    protected int currentSmallPhaseIndex = 0;
+    protected int respawnCount = 0;
+    protected bool sequenceRunning = false;
+
+    protected Vector3 wandererStartPos;
+    protected Vector3 bigPhaseStartWandererPos;
+    protected List<GameObject> activeProjectiles = new List<GameObject>();
+
+    // ----------------- Start -----------------
+    private IEnumerator Start()
     {
         if (sphereCenterTransform == null)
-            Debug.LogError("[SphereGoalManager] Sphere Center not assigned!");
-    }
-
-    private void Start()
-    {
-        // Snap Ghost and Wanderer to sphere surface
-        if (ghost != null)
         {
-            Vector3 dir = (ghost.position - sphereCenterTransform.position).normalized;
-            ghost.position = sphereCenterTransform.position + dir * sphereRadius;
+            Debug.LogError("[SphereGoalManager] Sphere Center not assigned!");
+            yield break;
         }
 
+        // Snap wanderer to sphere at runtime only
         if (wanderer != null)
         {
             Vector3 dir = (wanderer.position - sphereCenterTransform.position).normalized;
             wanderer.position = sphereCenterTransform.position + dir * sphereRadius;
         }
 
-        // Optionally snap all waypoints to the sphere surface
-        if (snapWaypointsToSphere)
-        {
-            foreach (GoalPhaseData phase in smallPhases)
-            {
-                foreach (PhaseWaypoint wp in phase.waypoints)
-                {
-                    if (wp.waypointTransform != null)
-                    {
-                        Vector3 dir = (wp.waypointTransform.position - sphereCenterTransform.position).normalized;
-                        wp.waypointTransform.position = sphereCenterTransform.position + dir * sphereRadius;
-                    }
-                }
-            }
-        }
-
-        // Start the sequence
-        StartCoroutine(RunSequence());
+        yield return StartCoroutine(RunSequence());
     }
 
-    // Override movement to move along the sphere
-    protected override IEnumerator MoveCharacterWithProjectiles(Transform character, GoalPhaseData phase)
+    // ----------------- Main Sequence -----------------
+    protected IEnumerator RunSequence()
     {
-        foreach (PhaseWaypoint wp in phase.waypoints)
+        sequenceRunning = true;
+
+        while (currentSmallPhaseIndex < smallPhases.Count)
+        {
+            var phase = smallPhases[currentSmallPhaseIndex];
+            if (phase == null) { currentSmallPhaseIndex++; continue; }
+
+            wandererStartPos = wanderer.position;
+            if (currentSmallPhaseIndex % 5 == 0) bigPhaseStartWandererPos = wanderer.position;
+
+            // Move all ghosts simultaneously
+            if (phase.ghostsInPhase != null && phase.ghostsInPhase.Count > 0)
+            {
+                List<Coroutine> ghostCoroutines = new List<Coroutine>();
+                foreach (var gd in phase.ghostsInPhase)
+                {
+                    if (gd.ghostTransform != null && gd.waypoints != null && gd.waypoints.Count > 0)
+                    {
+                        Coroutine c = StartCoroutine(MoveCharacterWithProjectilesOnSphere(gd.ghostTransform, gd.waypoints, phase.pauseDuration));
+                        ghostCoroutines.Add(c);
+                    }
+                }
+
+                // Wait for all ghosts to finish
+                foreach (var c in ghostCoroutines)
+                    yield return c;
+
+                ClearProjectiles();
+            }
+
+            // Move wanderer
+            if (phase.waypoints != null && phase.waypoints.Count > 0)
+                yield return StartCoroutine(MoveCharacterWithProjectilesOnSphere(wanderer, phase.waypoints, phase.pauseDuration));
+
+            currentSmallPhaseIndex++;
+            if (currentSmallPhaseIndex % 5 == 0) respawnCount = 0;
+        }
+
+        sequenceRunning = false;
+        Debug.Log("🎯 All small phases complete.");
+    }
+
+    // ----------------- Sphere Movement -----------------
+    protected IEnumerator MoveCharacterWithProjectilesOnSphere(Transform character, List<PhaseWaypoint> waypoints, float pauseDuration)
+    {
+        foreach (var wp in waypoints)
         {
             if (wp.waypointTransform == null) continue;
 
             Vector3 target = sphereCenterTransform.position + (wp.waypointTransform.position - sphereCenterTransform.position).normalized * sphereRadius;
-
             bool projectileFired = false;
 
             while (Vector3.Distance(character.position, target) > reachThreshold)
             {
                 float step = moveSpeed * Time.deltaTime;
-
-                // Move character along the sphere
                 character.position = SphereMover.MoveOnSphere(character.position, target, sphereCenterTransform.position, sphereRadius, step);
-
-                // Orient up vector
                 character.up = (character.position - sphereCenterTransform.position).normalized;
 
-                // Debug log for movement
-                Debug.Log($"[SphereGoalManager] Moving {character.name} towards {target}");
-
-                // Fire projectiles slightly before reaching waypoint
                 if (wp.triggerProjectile && !projectileFired)
                 {
                     float remainingDistance = Vector3.Distance(character.position, target);
-                    float leadDistance = moveSpeed * wp.leadTime;
-                    if (remainingDistance <= leadDistance)
+                    if (remainingDistance <= moveSpeed * wp.leadTime)
                     {
-                        FireProjectiles(character, wp);
+                        projectileSpawner.SpawnOne(this, wp.waypointTransform.position, character.position);
                         projectileFired = true;
                     }
                 }
@@ -109,44 +128,118 @@ public class SphereGoalManager : GoalManager
                 yield return null;
             }
 
-            yield return new WaitForSeconds(phase.pauseDuration);
+            yield return new WaitForSeconds(pauseDuration);
         }
     }
 
-    // ------------------- Gizmos -------------------
+    // ----------------- Projectiles -----------------
+    protected void ClearProjectiles()
+    {
+        foreach (var proj in activeProjectiles)
+            if (proj != null) Destroy(proj);
+
+        activeProjectiles.Clear();
+    }
+
+    // ----------------- Reset Phase -----------------
+    public void ResetPhase()
+    {
+        respawnCount++;
+        ClearProjectiles();
+        wanderer.position = wandererStartPos;
+
+        if (respawnCount >= maxRespawnsPerBigPhase)
+        {
+            int currentBigPhaseIndex = currentSmallPhaseIndex / 5;
+            currentSmallPhaseIndex = currentBigPhaseIndex * 5;
+            respawnCount = 0;
+            wanderer.position = bigPhaseStartWandererPos;
+        }
+
+        StopAllCoroutines();
+        StartCoroutine(RunSequence());
+    }
+
+    // ----------------- Gizmos for Editor -----------------
     private void OnDrawGizmos()
     {
         if (sphereCenterTransform == null) return;
 
-        // Draw wire sphere for the movement radius
+        // Draw the sphere
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(sphereCenterTransform.position, sphereRadius);
 
-        // Draw lines from center to waypoints
-        if (smallPhases != null)
+        if (smallPhases == null) return;
+
+        foreach (var phase in smallPhases)
         {
-            foreach (GoalPhaseData phase in smallPhases)
+            if (phase == null) continue;
+
+            // Ghost waypoints (snap only waypoints in editor)
+            if (phase.ghostsInPhase != null)
             {
-                if (phase?.waypoints == null) continue;
-                foreach (PhaseWaypoint wp in phase.waypoints)
+                foreach (var gd in phase.ghostsInPhase)
                 {
-                    if (wp?.waypointTransform == null) continue;
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawLine(sphereCenterTransform.position, wp.waypointTransform.position);
-                    Gizmos.DrawSphere(wp.waypointTransform.position, 0.2f);
+                    if (gd.waypoints != null)
+                    {
+                        foreach (var wp in gd.waypoints)
+                        {
+                            if (wp == null || wp.waypointTransform == null) continue;
+
+                            Vector3 dir = (wp.waypointTransform.position - sphereCenterTransform.position).normalized;
+                            Vector3 snappedPos = sphereCenterTransform.position + dir * sphereRadius;
+
+                            Gizmos.color = Color.green;
+                            Gizmos.DrawLine(sphereCenterTransform.position, snappedPos);
+                            Gizmos.DrawSphere(snappedPos, 0.15f);
+
+                            // Only snap waypoints, not ghosts
+                            if (snapWaypointsToSphere && !Application.isPlaying)
+                                wp.waypointTransform.position = snappedPos;
+                        }
+                    }
+                }
+            }
+
+            // Wanderer waypoints
+            if (phase.waypoints != null)
+            {
+                foreach (var wp in phase.waypoints)
+                {
+                    if (wp == null || wp.waypointTransform == null) continue;
+
+                    Vector3 dir = (wp.waypointTransform.position - sphereCenterTransform.position).normalized;
+                    Vector3 snappedPos = sphereCenterTransform.position + dir * sphereRadius;
+
+                    Gizmos.color = Color.cyan;
+                    Gizmos.DrawLine(sphereCenterTransform.position, snappedPos);
+                    Gizmos.DrawSphere(snappedPos, 0.15f);
+
+                    if (snapWaypointsToSphere && !Application.isPlaying)
+                        wp.waypointTransform.position = snappedPos;
                 }
             }
         }
 
-        // Draw Ghost and Wanderer positions
-        if (ghost != null)
+        // Ghost positions (only draw, do not move)
+        foreach (var phase in smallPhases)
         {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawSphere(ghost.position, 0.25f);
+            if (phase?.ghostsInPhase == null) continue;
+
+            foreach (var gd in phase.ghostsInPhase)
+            {
+                if (gd.ghostTransform != null)
+                {
+                    Gizmos.color = Color.magenta;
+                    Gizmos.DrawSphere(gd.ghostTransform.position, 0.2f);
+                }
+            }
         }
+
+        // Wanderer position
         if (wanderer != null)
         {
-            Gizmos.color = Color.magenta;
+            Gizmos.color = Color.red;
             Gizmos.DrawSphere(wanderer.position, 0.25f);
         }
     }

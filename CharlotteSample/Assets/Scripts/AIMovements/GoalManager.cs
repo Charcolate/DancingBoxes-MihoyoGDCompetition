@@ -2,6 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class ExtraGhostData
+{
+    [Tooltip("The Transform of this additional ghost.")]
+    public Transform ghostTransform;
+
+    [Tooltip("Custom small phases (waypoints) for this ghost.")]
+    public List<GoalPhaseData> ghostPhases = new List<GoalPhaseData>();
+}
+
 public class GoalManager : MonoBehaviour
 {
     [Header("Phase Configuration")]
@@ -10,6 +20,10 @@ public class GoalManager : MonoBehaviour
     [Header("Characters")]
     public Transform ghost;
     public Transform wanderer;
+
+    [Header("Multiple Ghosts (optional)")]
+    [Tooltip("Each entry defines a ghost and its unique waypoint phases.")]
+    public List<ExtraGhostData> extraGhosts = new List<ExtraGhostData>();
 
     [Header("Projectile System")]
     public ProjectileSpawner projectileSpawner;
@@ -47,10 +61,25 @@ public class GoalManager : MonoBehaviour
             return;
         }
 
+        // Start the main ghost + wanderer sequence
         StartCoroutine(RunSequence());
+
+        // Start sequences for extra ghosts
+        foreach (ExtraGhostData ghostData in extraGhosts)
+        {
+            if (ghostData.ghostTransform == null)
+                continue;
+
+            if (ghostData.ghostPhases == null || ghostData.ghostPhases.Count == 0)
+            {
+                Debug.LogWarning($"⚠️ Extra ghost '{ghostData.ghostTransform.name}' has no phases assigned.");
+                continue;
+            }
+
+            StartCoroutine(RunExtraGhostSequence(ghostData.ghostTransform, ghostData.ghostPhases));
+        }
     }
 
-    // Make RunSequence protected virtual so it can be overridden
     protected virtual IEnumerator RunSequence()
     {
         sequenceRunning = true;
@@ -94,7 +123,6 @@ public class GoalManager : MonoBehaviour
         Debug.Log("🎯 All small phases complete.");
     }
 
-    // Make MoveCharacterWithProjectiles protected virtual so it can be overridden
     protected virtual IEnumerator MoveCharacterWithProjectiles(Transform character, GoalPhaseData phase)
     {
         foreach (PhaseWaypoint wp in phase.waypoints)
@@ -127,7 +155,6 @@ public class GoalManager : MonoBehaviour
         }
     }
 
-    // Make FireProjectiles protected so subclasses can call
     protected void FireProjectiles(Transform character, PhaseWaypoint wp)
     {
         bool showTrajectory = (character == ghost);
@@ -201,10 +228,42 @@ public class GoalManager : MonoBehaviour
 
         StopAllCoroutines();
         StartCoroutine(RunSequence());
+
+        // Restart extra ghosts
+        foreach (ExtraGhostData ghostData in extraGhosts)
+        {
+            if (ghostData.ghostTransform == null)
+                continue;
+
+            if (ghostData.ghostPhases == null || ghostData.ghostPhases.Count == 0)
+                continue;
+
+            StartCoroutine(RunExtraGhostSequence(ghostData.ghostTransform, ghostData.ghostPhases));
+        }
     }
 
     public bool IsGhostSequenceFinished()
     {
         return !sequenceRunning;
+    }
+
+    // ----------------- Extra Ghost Coroutine -----------------
+    protected IEnumerator RunExtraGhostSequence(Transform ghostTransform, List<GoalPhaseData> ghostPhases)
+    {
+        if (ghostTransform == null || ghostPhases == null || ghostPhases.Count == 0)
+            yield break;
+
+        Debug.Log($"👻 Starting extra ghost: {ghostTransform.name}");
+
+        foreach (GoalPhaseData phase in ghostPhases)
+        {
+            if (phase == null || phase.waypoints == null || phase.waypoints.Count == 0)
+                continue;
+
+            yield return StartCoroutine(MoveCharacterWithProjectiles(ghostTransform, phase));
+            ClearProjectiles(); // optional cleanup
+        }
+
+        Debug.Log($"👻 Extra ghost '{ghostTransform.name}' completed all its phases.");
     }
 }
