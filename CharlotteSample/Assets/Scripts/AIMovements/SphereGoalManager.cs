@@ -44,7 +44,7 @@ public class SphereGoalManager : MonoBehaviour
             yield break;
         }
 
-        // Snap wanderer to sphere at runtime only
+        // Snap wanderer to sphere at runtime
         if (wanderer != null)
         {
             Vector3 dir = (wanderer.position - sphereCenterTransform.position).normalized;
@@ -65,9 +65,22 @@ public class SphereGoalManager : MonoBehaviour
             if (phase == null) { currentSmallPhaseIndex++; continue; }
 
             wandererStartPos = wanderer.position;
-            if (currentSmallPhaseIndex % 5 == 0) bigPhaseStartWandererPos = wanderer.position;
+            if (currentSmallPhaseIndex % 5 == 0)
+                bigPhaseStartWandererPos = wanderer.position;
 
-            // Move all ghosts simultaneously
+            // ---------------- Activate ghosts for this phase ----------------
+            if (phase.ghostsInPhase != null)
+            {
+                foreach (var gd in phase.ghostsInPhase)
+                {
+                    if (gd.ghostTransform == null) continue;
+
+                    gd.ghostTransform.gameObject.SetActive(true);
+                    gd.ghostTransform.position = wanderer.position; // spawn at wanderer
+                }
+            }
+
+            // ---------------- Move ghosts simultaneously ----------------
             if (phase.ghostsInPhase != null && phase.ghostsInPhase.Count > 0)
             {
                 List<Coroutine> ghostCoroutines = new List<Coroutine>();
@@ -75,24 +88,39 @@ public class SphereGoalManager : MonoBehaviour
                 {
                     if (gd.ghostTransform != null && gd.waypoints != null && gd.waypoints.Count > 0)
                     {
-                        Coroutine c = StartCoroutine(MoveCharacterWithProjectilesOnSphere(gd.ghostTransform, gd.waypoints, phase.pauseDuration));
+                        Coroutine c = StartCoroutine(MoveCharacterWithProjectilesOnSphere(
+                            gd.ghostTransform, gd.waypoints, phase.pauseDuration));
                         ghostCoroutines.Add(c);
                     }
                 }
 
-                // Wait for all ghosts to finish
                 foreach (var c in ghostCoroutines)
                     yield return c;
 
                 ClearProjectiles();
             }
 
-            // Move wanderer
+            // ---------------- Move wanderer ----------------
             if (phase.waypoints != null && phase.waypoints.Count > 0)
                 yield return StartCoroutine(MoveCharacterWithProjectilesOnSphere(wanderer, phase.waypoints, phase.pauseDuration));
 
+            // ---------------- Deactivate unused ghosts ----------------
+            if (currentSmallPhaseIndex + 1 < smallPhases.Count)
+            {
+                var nextPhase = smallPhases[currentSmallPhaseIndex + 1];
+                if (nextPhase.ghostsInPhase != null)
+                {
+                    foreach (var gd in phase.ghostsInPhase)
+                    {
+                        if (!nextPhase.ghostsInPhase.Contains(gd) && gd.ghostTransform != null)
+                            gd.ghostTransform.gameObject.SetActive(false);
+                    }
+                }
+            }
+
             currentSmallPhaseIndex++;
-            if (currentSmallPhaseIndex % 5 == 0) respawnCount = 0;
+            if (currentSmallPhaseIndex % 5 == 0)
+                respawnCount = 0;
         }
 
         sequenceRunning = false;
@@ -165,7 +193,6 @@ public class SphereGoalManager : MonoBehaviour
     {
         if (sphereCenterTransform == null) return;
 
-        // Draw the sphere
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(sphereCenterTransform.position, sphereRadius);
 
@@ -175,7 +202,7 @@ public class SphereGoalManager : MonoBehaviour
         {
             if (phase == null) continue;
 
-            // Ghost waypoints (snap only waypoints in editor)
+            // Ghost waypoints
             if (phase.ghostsInPhase != null)
             {
                 foreach (var gd in phase.ghostsInPhase)
@@ -193,7 +220,6 @@ public class SphereGoalManager : MonoBehaviour
                             Gizmos.DrawLine(sphereCenterTransform.position, snappedPos);
                             Gizmos.DrawSphere(snappedPos, 0.15f);
 
-                            // Only snap waypoints, not ghosts
                             if (snapWaypointsToSphere && !Application.isPlaying)
                                 wp.waypointTransform.position = snappedPos;
                         }
@@ -221,7 +247,7 @@ public class SphereGoalManager : MonoBehaviour
             }
         }
 
-        // Ghost positions (only draw, do not move)
+        // Ghost positions
         foreach (var phase in smallPhases)
         {
             if (phase?.ghostsInPhase == null) continue;

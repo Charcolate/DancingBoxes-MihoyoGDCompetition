@@ -533,19 +533,26 @@ MonoBehaviour:
         projectileCount: 0
         customSpawnTransforms: []
         leadTime: 0
-      - waypointTransform: {fileID: 341505117}
+      - waypointTransform: {fileID: 1251830775}
         triggerProjectile: 0
         projectileCount: 0
         customSpawnTransforms: []
         leadTime: 0
   - waypoints:
-    - waypointTransform: {fileID: 1251830775}
+    - waypointTransform: {fileID: 556073449}
       triggerProjectile: 0
       projectileCount: 0
       customSpawnTransforms: []
       leadTime: 0
-    pauseDuration: 0
-    ghostsInPhase: []
+    pauseDuration: 2
+    ghostsInPhase:
+    - ghostTransform: {fileID: 1484276675}
+      waypoints:
+      - waypointTransform: {fileID: 556073449}
+        triggerProjectile: 0
+        projectileCount: 0
+        customSpawnTransforms: []
+        leadTime: 0
   - waypoints:
     - waypointTransform: {fileID: 556073449}
       triggerProjectile: 0
