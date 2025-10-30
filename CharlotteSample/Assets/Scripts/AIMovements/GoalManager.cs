@@ -5,18 +5,53 @@ using UnityEngine;
 // SphereMover class for spherical movement
 public static class SphereMover
 {
-    public static Vector3 MoveOnSphere(Vector3 currentPos, Vector3 targetPos, Vector3 sphereCenter, float radius, float step)
+    public static (Vector3 position, Quaternion rotation) MoveOnSphere(Vector3 currentPos, Vector3 targetPos, Vector3 sphereCenter, float radius, float step)
     {
         Vector3 dirCurrent = (currentPos - sphereCenter).normalized;
         Vector3 dirTarget = (targetPos - sphereCenter).normalized;
 
         float angle = Vector3.Angle(dirCurrent, dirTarget);
-        if (angle < 0.001f) return sphereCenter + dirTarget * radius;
+        if (angle < 0.001f)
+        {
+            Quaternion finalRotation = Quaternion.LookRotation(CalculateForwardDirection(dirTarget), dirTarget);
+            return (sphereCenter + dirTarget * radius, finalRotation);
+        }
 
         float t = Mathf.Min(1f, step / angle);
         Vector3 newDir = Vector3.Slerp(dirCurrent, dirTarget, t).normalized;
 
-        return sphereCenter + newDir * radius;
+        // Calculate rotation to align with sphere surface
+        Quaternion newRotation = Quaternion.LookRotation(CalculateForwardDirection(newDir), newDir);
+
+        return (sphereCenter + newDir * radius, newRotation);
+    }
+
+    // Calculate a forward direction that's tangent to the sphere surface
+    private static Vector3 CalculateForwardDirection(Vector3 surfaceNormal)
+    {
+        // Use world up as reference, but project it onto the tangent plane
+        Vector3 referenceUp = Vector3.up;
+
+        // If the surface normal is nearly parallel to world up, use a different reference
+        if (Mathf.Abs(Vector3.Dot(surfaceNormal, referenceUp)) > 0.99f)
+        {
+            referenceUp = Vector3.forward;
+        }
+
+        // Calculate tangent vector (forward direction)
+        Vector3 tangent = Vector3.Cross(surfaceNormal, referenceUp).normalized;
+        return tangent;
+    }
+
+    // Alternative method that just aligns the up vector with the sphere normal
+    public static Quaternion AlignToSphereSurface(Vector3 position, Vector3 sphereCenter)
+    {
+        Vector3 surfaceNormal = (position - sphereCenter).normalized;
+
+        // Calculate forward direction that's tangent to the sphere
+        Vector3 forward = CalculateForwardDirection(surfaceNormal);
+
+        return Quaternion.LookRotation(forward, surfaceNormal);
     }
 }
 
@@ -363,6 +398,7 @@ public class GoalManager : MonoBehaviour
 
         Vector3 direction = (target.position - sphereCenter.position).normalized;
         target.position = sphereCenter.position + direction * sphereRadius;
+        target.rotation = SphereMover.AlignToSphereSurface(target.position, sphereCenter.position);
     }
 
     // Method to snap a waypoint to the sphere surface
@@ -467,14 +503,17 @@ public class GoalManager : MonoBehaviour
 
             while (character != null && Vector3.Distance(character.position, target) > reachThreshold)
             {
-                // Use sphere movement instead of straight line movement
+                // Use sphere movement with rotation
                 if (sphereCenter != null)
                 {
-                    character.position = SphereMover.MoveOnSphere(character.position, target, sphereCenter.position, sphereRadius, moveSpeed * Time.deltaTime);
+                    var (newPosition, newRotation) = SphereMover.MoveOnSphere(
+                        character.position, target, sphereCenter.position, sphereRadius, moveSpeed * Time.deltaTime);
+                    character.position = newPosition;
+                    character.rotation = newRotation;
                 }
                 else
                 {
-                    // Fallback to straight line movement if no sphere center
+                    // Fallback to straight line movement
                     character.position = Vector3.MoveTowards(character.position, target, moveSpeed * Time.deltaTime);
                 }
 
@@ -495,7 +534,7 @@ public class GoalManager : MonoBehaviour
 
             if (character != null)
             {
-                // Ensure final position is exactly on sphere surface
+                // Ensure final position and rotation are correct
                 if (sphereCenter != null)
                 {
                     SnapToSphereSurface(character);
@@ -522,10 +561,13 @@ public class GoalManager : MonoBehaviour
 
             while (ghost != null && Vector3.Distance(ghost.position, target) > reachThreshold)
             {
-                // Use sphere movement for ghosts
+                // Use sphere movement with rotation for ghosts
                 if (sphereCenter != null)
                 {
-                    ghost.position = SphereMover.MoveOnSphere(ghost.position, target, sphereCenter.position, sphereRadius, moveSpeed * Time.deltaTime);
+                    var (newPosition, newRotation) = SphereMover.MoveOnSphere(
+                        ghost.position, target, sphereCenter.position, sphereRadius, moveSpeed * Time.deltaTime);
+                    ghost.position = newPosition;
+                    ghost.rotation = newRotation;
                 }
                 else
                 {
@@ -562,7 +604,7 @@ public class GoalManager : MonoBehaviour
 
             if (ghost != null)
             {
-                // Ensure final position is exactly on sphere surface
+                // Ensure final position and rotation are correct
                 if (sphereCenter != null)
                 {
                     SnapToSphereSurface(ghost);
@@ -594,10 +636,13 @@ public class GoalManager : MonoBehaviour
 
             while (wanderer != null && Vector3.Distance(wanderer.position, target) > reachThreshold)
             {
-                // Use sphere movement for wanderer
+                // Use sphere movement with rotation for wanderer
                 if (sphereCenter != null)
                 {
-                    wanderer.position = SphereMover.MoveOnSphere(wanderer.position, target, sphereCenter.position, sphereRadius, moveSpeed * Time.deltaTime);
+                    var (newPosition, newRotation) = SphereMover.MoveOnSphere(
+                        wanderer.position, target, sphereCenter.position, sphereRadius, moveSpeed * Time.deltaTime);
+                    wanderer.position = newPosition;
+                    wanderer.rotation = newRotation;
                 }
                 else
                 {
@@ -635,7 +680,7 @@ public class GoalManager : MonoBehaviour
 
             if (wanderer != null)
             {
-                // Ensure final position is exactly on sphere surface
+                // Ensure final position and rotation are correct
                 if (sphereCenter != null)
                 {
                     SnapToSphereSurface(wanderer);
