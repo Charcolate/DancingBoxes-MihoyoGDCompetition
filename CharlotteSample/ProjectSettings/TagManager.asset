@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Projectile
   - Wanderer
+  - Ghost
+  - Cylinder
   layers:
   - Default
   - TransparentFX

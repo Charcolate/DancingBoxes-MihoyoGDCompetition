@@ -4,32 +4,19 @@ public class ProjectileSpawner : MonoBehaviour
 {
     [Header("Projectile Settings")]
     public GameObject projectilePrefab;
-    public Transform spawnPoint;
-    public float projectileSpeed = 12f;
-    public float projectileLifetime = 6f;
+    public float projectileSpeed = 15f;
 
-    private void Start()
-    {
-        if (spawnPoint == null)
-            spawnPoint = transform;
-    }
-
-    // Returns the spawned GameObject for tracking
-    public GameObject SpawnOne(MonoBehaviour goalManager, Vector3 spawnPosition, Vector3 targetPosition)
+    public GameObject SpawnOne(Vector3 spawnPosition, Vector3 targetPosition, bool destroyOnCollision = false)
     {
         if (projectilePrefab == null) return null;
 
         GameObject proj = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
-        Rigidbody rb = proj.GetComponent<Rigidbody>();
-        if (rb == null) return null;
+        Projectile projectile = proj.GetComponent<Projectile>();
+        if (projectile != null)
+        {
+            projectile.SetTarget(spawnPosition, targetPosition, projectileSpeed, destroyOnCollision);
+        }
 
-        Vector3 dir = (targetPosition - spawnPosition).normalized;
-        rb.linearVelocity = dir * projectileSpeed;
-        rb.useGravity = true;
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-
-        Destroy(proj, projectileLifetime);
         return proj;
     }
-
 }
