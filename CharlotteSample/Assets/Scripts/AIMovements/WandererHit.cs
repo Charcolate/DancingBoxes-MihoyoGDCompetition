@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class WandererHit : MonoBehaviour
@@ -22,13 +22,35 @@ public class WandererHit : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        // Check if the collision is with a projectile
         if (collision.gameObject.CompareTag("Projectile"))
         {
+            Debug.Log("💥 Wanderer hit by projectile!");
+
             if (flashCoroutine != null) StopCoroutine(flashCoroutine);
             flashCoroutine = StartCoroutine(FlashRoutine());
 
             if (goalManager != null)
                 goalManager.ResetPhase();
+            else
+                Debug.LogError("❌ GoalManager not found!");
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // Also check for trigger collisions (in case projectiles use triggers)
+        if (other.CompareTag("Projectile"))
+        {
+            Debug.Log("💥 Wanderer hit by projectile (trigger)!");
+
+            if (flashCoroutine != null) StopCoroutine(flashCoroutine);
+            flashCoroutine = StartCoroutine(FlashRoutine());
+
+            if (goalManager != null)
+                goalManager.ResetPhase();
+            else
+                Debug.LogError("❌ GoalManager not found!");
         }
     }
 
