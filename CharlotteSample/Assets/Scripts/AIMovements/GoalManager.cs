@@ -90,6 +90,7 @@ public class GoalManager : MonoBehaviour
 
     // Internal tracking
     protected int currentSmallPhaseIndex = 0;
+    public int CurrentSmallPhaseIndex => currentSmallPhaseIndex;
     protected int respawnCount = 0;
     protected bool sequenceRunning = false;
 
@@ -106,6 +107,11 @@ public class GoalManager : MonoBehaviour
 
     // Track waypoint triggers
     protected Dictionary<Collider, PhaseWaypoint> waypointTriggers = new Dictionary<Collider, PhaseWaypoint>();
+
+    public int GetCurrentSmallPhaseIndex()
+    {
+        return currentSmallPhaseIndex;
+    }
 
     protected virtual void Start()
     {
@@ -377,6 +383,8 @@ public class GoalManager : MonoBehaviour
 
             // Destroy ghosts at the end of the small phase
             DestroyAllGhosts();
+
+            Debug.Log($"✅ Small phase {currentSmallPhaseIndex + 1} completed - camera should move now");
 
             currentSmallPhaseIndex++;
 

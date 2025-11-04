@@ -1,0 +1,166 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\SphericalCameraFollow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GoalManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\AIMovements\\GoalManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\SphereSample.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\lightsMovements\\SphereSample.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\ColliderController_NewInput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\lightsMovements\\ColliderController_NewInput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\PhaseDataClasses.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\AIMovements\\PhaseDataClasses.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\ProjectileSpawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\AIMovements\\ProjectileSpawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WandererHit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\AIMovements\\WandererHit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WaypointTrigger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\AIMovements\\WaypointTrigger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\Projectile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\AIMovements\\Projectile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "WaypointTrigger.cs",
+              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WaypointTrigger.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\AIMovements\\WaypointTrigger.cs",
+              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WaypointTrigger.cs",
+              "RelativeToolTip": "Assets\\Scripts\\AIMovements\\WaypointTrigger.cs",
+              "ViewState": "AgIAALkAAAAAAAAAAAAuwN8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-30T03:06:36.77Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SphereSample.cs",
+              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\SphereSample.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\lightsMovements\\SphereSample.cs",
+              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\SphereSample.cs",
+              "RelativeToolTip": "Assets\\Scripts\\lightsMovements\\SphereSample.cs",
+              "ViewState": "AgIAAFQAAAAAAAAAAAAuwHoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-30T01:22:20.176Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Projectile.cs",
+              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\Projectile.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\AIMovements\\Projectile.cs",
+              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\Projectile.cs",
+              "RelativeToolTip": "Assets\\Scripts\\AIMovements\\Projectile.cs",
+              "ViewState": "AgIAAPAAAAAAAAAAAAAwwBUBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-30T04:00:04.124Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ColliderController_NewInput.cs",
+              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\ColliderController_NewInput.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\lightsMovements\\ColliderController_NewInput.cs",
+              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\ColliderController_NewInput.cs",
+              "RelativeToolTip": "Assets\\Scripts\\lightsMovements\\ColliderController_NewInput.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAuwEIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-30T05:53:25.588Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "GoalManager.cs",
+              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GoalManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\AIMovements\\GoalManager.cs",
+              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GoalManager.cs",
+              "RelativeToolTip": "Assets\\Scripts\\AIMovements\\GoalManager.cs",
+              "ViewState": "AgIAADwAAAAAAAAAAIAwwFwAAABAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T03:26:06.466Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SphericalCameraFollow.cs",
+              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\SphericalCameraFollow.cs",
+              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs",
+              "RelativeToolTip": "Assets\\Scripts\\SphericalCameraFollow.cs",
+              "ViewState": "AgIAAMwAAAAAAAAAAAAuwPIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-04T14:07:52.623Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "WandererHit.cs",
+              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WandererHit.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\AIMovements\\WandererHit.cs",
+              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WandererHit.cs",
+              "RelativeToolTip": "Assets\\Scripts\\AIMovements\\WandererHit.cs",
+              "ViewState": "AgIAABoAAAAAAAAAAAAuwEAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-29T22:54:47.812Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ProjectileSpawner.cs",
+              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\ProjectileSpawner.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\AIMovements\\ProjectileSpawner.cs",
+              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\ProjectileSpawner.cs",
+              "RelativeToolTip": "Assets\\Scripts\\AIMovements\\ProjectileSpawner.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-29T22:54:48.539Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "PhaseDataClasses.cs",
+              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\PhaseDataClasses.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\AIMovements\\PhaseDataClasses.cs",
+              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\CharlotteSample\\Assets\\Scripts\\AIMovements\\PhaseDataClasses.cs",
+              "RelativeToolTip": "Assets\\Scripts\\AIMovements\\PhaseDataClasses.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-29T22:54:50.44Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
