@@ -3,24 +3,79 @@ using System.Collections.Generic;
 
 public class WaypointTrigger : MonoBehaviour
 {
+    [Header("Goal Manager Reference (Sphere Movement)")]
     public GoalManager goalManager;
+
+    [Header("Goals Reference (Flat Plane Movement)")]
+    public Goals goals;
 
     // Track objects currently in the trigger
     private HashSet<GameObject> cylindersInTrigger = new HashSet<GameObject>();
     private bool wandererIsInTrigger = false;
     private bool hasTriggeredRespawn = false;
 
+    // Helper property to get the active goal system
+    private MonoBehaviour ActiveGoalSystem
+    {
+        get
+        {
+            if (goalManager != null) return goalManager;
+            if (goals != null) return goals;
+            return null;
+        }
+    }
+
+    // Helper property to get the wanderer transform
+    private Transform Wanderer
+    {
+        get
+        {
+            if (goalManager != null && goalManager.wanderer != null) return goalManager.wanderer;
+            if (goals != null && goals.wanderer != null) return goals.wanderer;
+            return null;
+        }
+    }
+
+    // Helper property to get the cylinder manager
+    private ColliderController_NewInput CylinderManager
+    {
+        get
+        {
+            if (goalManager != null) return goalManager.cylinderManager;
+            if (goals != null) return goals.cylinderManager;
+            return null;
+        }
+    }
+
     private void Start()
     {
         Debug.Log($"🔧 WaypointTrigger started: {gameObject.name} at position {transform.position}");
+
+        // Log which goal system is active
+        if (goalManager != null)
+            Debug.Log($"🎯 Connected to GoalManager (Sphere Movement)");
+        else if (goals != null)
+            Debug.Log($"🎯 Connected to Goals (Flat Plane Movement)");
+        else
+            Debug.LogError($"❌ WaypointTrigger not connected to any goal system!");
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (goalManager == null) return;
+        // Notify the appropriate goal system
+        if (other.CompareTag("Wanderer"))
+        {
+            if (goalManager != null)
+                goalManager.OnWandererEnterWaypoint(GetComponent<Collider>());
+            else if (goals != null)
+                goals.OnWandererEnterWaypoint(GetComponent<Collider>());
+        }
+
+        if (ActiveGoalSystem == null) return;
 
         // Check if the wanderer entered the trigger
-        if (other.CompareTag("Player") || (goalManager.wanderer != null && other.transform == goalManager.wanderer))
+        Transform currentWanderer = Wanderer;
+        if (other.CompareTag("Player") || (currentWanderer != null && other.transform == currentWanderer))
         {
             Debug.Log($"🎯 Wanderer entered waypoint trigger: {gameObject.name}");
             wandererIsInTrigger = true;
@@ -42,10 +97,11 @@ public class WaypointTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (goalManager == null) return;
+        if (ActiveGoalSystem == null) return;
 
         // Check if the wanderer left the trigger
-        if (other.CompareTag("Player") || (goalManager.wanderer != null && other.transform == goalManager.wanderer))
+        Transform currentWanderer = Wanderer;
+        if (other.CompareTag("Player") || (currentWanderer != null && other.transform == currentWanderer))
         {
             Debug.Log($"🎯 Wanderer left waypoint trigger: {gameObject.name}");
             wandererIsInTrigger = false;
@@ -111,7 +167,8 @@ public class WaypointTrigger : MonoBehaviour
 
     private void CheckForExistingCylinders()
     {
-        if (goalManager == null || goalManager.cylinderManager == null) return;
+        ColliderController_NewInput currentCylinderManager = CylinderManager;
+        if (currentCylinderManager == null || currentCylinderManager.cylinders == null) return;
 
         Collider triggerCollider = GetComponent<Collider>();
         if (triggerCollider == null) return;
@@ -119,7 +176,7 @@ public class WaypointTrigger : MonoBehaviour
         Debug.Log($"🔍 Checking for existing cylinders in trigger...");
         int foundCount = 0;
 
-        foreach (var cylinder in goalManager.cylinderManager.cylinders)
+        foreach (var cylinder in currentCylinderManager.cylinders)
         {
             if (cylinder != null && cylinder.activeInHierarchy)
             {
@@ -142,9 +199,10 @@ public class WaypointTrigger : MonoBehaviour
 
     private bool IsCylinderObject(GameObject obj)
     {
-        if (goalManager != null && goalManager.cylinderManager != null && goalManager.cylinderManager.cylinders != null)
+        ColliderController_NewInput currentCylinderManager = CylinderManager;
+        if (currentCylinderManager != null && currentCylinderManager.cylinders != null)
         {
-            foreach (var cylinder in goalManager.cylinderManager.cylinders)
+            foreach (var cylinder in currentCylinderManager.cylinders)
             {
                 if (cylinder != null && cylinder == obj)
                 {
@@ -176,9 +234,13 @@ public class WaypointTrigger : MonoBehaviour
             {
                 goalManager.OnWandererInWaypointWithoutCylinders(GetComponent<Collider>());
             }
+            else if (goals != null)
+            {
+                goals.OnWandererInWaypointWithoutCylinders(GetComponent<Collider>());
+            }
             else
             {
-                Debug.LogError($"❌ GoalManager is null - cannot trigger respawn!");
+                Debug.LogError($"❌ No goal system connected - cannot trigger respawn!");
             }
         }
     }
@@ -206,8 +268,9 @@ public class WaypointTrigger : MonoBehaviour
 
             // Draw text showing cylinder count
 #if UNITY_EDITOR
-            UnityEditor.Handles.Label(transform.position + Vector3.up * 2f, 
-                $"Cylinders: {cylindersInTrigger.Count}\nWanderer: {wandererIsInTrigger}");
+            string goalType = goalManager != null ? "Sphere" : (goals != null ? "Flat" : "None");
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 2f,
+                $"Cylinders: {cylindersInTrigger.Count}\nWanderer: {wandererIsInTrigger}\nType: {goalType}");
 #endif
         }
 

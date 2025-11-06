@@ -12,6 +12,18 @@ EditorBuildSettings:
     path: Assets/CharlotteSample/Assets/Scenes/Final/MainMenu.unity
     guid: 95e142dc6029a0f45befb1927db080f7
   - enabled: 1
+    path: Assets/CharlotteSample/Assets/Scenes/Final/Tutorial1.unity
+    guid: 26cd44d7296773b4a950ebf8bedb5ab5
+  - enabled: 1
+    path: Assets/CharlotteSample/Assets/Scenes/Final/Tutorial2.unity
+    guid: 77d144e96693c61459372d3b58c4f958
+  - enabled: 1
+    path: Assets/CharlotteSample/Assets/Scenes/Final/Tutorial3.unity
+    guid: 51cad57dba0857e468913cebb3ed3967
+  - enabled: 1
+    path: Assets/CharlotteSample/Assets/Scenes/Final/Tutorial4.unity
+    guid: bb149d6b725d75e48a07c44435d26346
+  - enabled: 1
     path: Assets/CharlotteSample/Assets/Scenes/Final/Game.unity
     guid: 0fa7c0717597dc94c80e1badfae6e0c3
   m_configObjects:

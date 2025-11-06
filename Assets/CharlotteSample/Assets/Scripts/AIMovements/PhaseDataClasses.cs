@@ -15,6 +15,11 @@ public class GhostPhaseData
 {
     public Transform ghostTransform;
     public List<PhaseWaypoint> ghostWaypoints = new List<PhaseWaypoint>();
+
+    [Header("Visual Effects")]
+    public bool enableGoldTrail = false; // NEW: Toggle for gold trail
+    public float trailWidth = 0.2f; // NEW: Trail width
+    public Color trailColor = new Color(1f, 0.84f, 0f, 0.7f); // NEW: Gold color with alpha
 }
 
 [System.Serializable]
