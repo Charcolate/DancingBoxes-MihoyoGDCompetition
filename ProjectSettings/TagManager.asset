@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Projectile
+  - Cylinder
+  - Wanderer
+  - Ghost
   layers:
   - Default
   - TransparentFX

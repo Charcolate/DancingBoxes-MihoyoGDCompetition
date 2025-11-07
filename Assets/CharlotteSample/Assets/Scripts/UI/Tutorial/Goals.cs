@@ -579,7 +579,7 @@ public class Goals : MonoBehaviour
                 Projectile projectile = proj.GetComponent<Projectile>();
                 if (projectile != null)
                 {
-                    projectile.SetTarget(spawn.position, wp.waypointTransform.position, speedToUse, false);
+                    projectile.SetTarget(spawn.position, wp.waypointTransform, speedToUse, false);
                 }
                 activeProjectiles.Add(proj);
             }
@@ -610,7 +610,7 @@ public class Goals : MonoBehaviour
                 if (projectile != null)
                 {
                     projectile.showTrajectory = true;
-                    projectile.SetTarget(spawn.position, wp.waypointTransform.position, speedToUse, false);
+                    projectile.SetTarget(spawn.position, wp.waypointTransform, speedToUse, false);
                 }
 
                 activeProjectiles.Add(proj);
@@ -649,7 +649,7 @@ public class Goals : MonoBehaviour
                 if (projectile != null)
                 {
                     projectile.showTrajectory = false;
-                    projectile.SetTarget(spawn.position, wp.waypointTransform.position, speedToUse, true);
+                    projectile.SetTarget(spawn.position, wp.waypointTransform, speedToUse, false);
                     Debug.Log($"🎯 Wanderer projectile created - destroyOnCollision: {projectile.destroyOnCollision}");
                 }
                 wandererProjectiles.Add(proj);
@@ -774,6 +774,10 @@ public class Goals : MonoBehaviour
 
             wanderer.position = currentSmallPhaseStartPos;
             Debug.Log($"📍 Wanderer reset to small phase start position: {wanderer.position}");
+
+            // FIX: Restart just the current phase instead of the entire sequence
+            StopAllCoroutines();
+            StartCoroutine(RunCurrentPhaseOnly());
         }
         else
         {
@@ -785,14 +789,106 @@ public class Goals : MonoBehaviour
             Debug.Log($"📍 Wanderer reset to big phase start: {wanderer.position}");
 
             Debug.Log($"🔁 Respawn limit reached — restarting big phase {currentBigPhaseIndex + 1}");
-        }
 
-        StopAllCoroutines();
-        StartCoroutine(RunSequence());
+            StopAllCoroutines();
+            StartCoroutine(RunSequence());
+        }
 
         Debug.Log("✅ ResetPhase completed successfully");
     }
 
+    // ADD THIS NEW METHOD to run only the current phase
+    private IEnumerator RunCurrentPhaseOnly()
+    {
+        sequenceRunning = true;
+
+        if (currentSmallPhaseIndex < smallPhases.Count)
+        {
+            GoalPhaseData phase = smallPhases[currentSmallPhaseIndex];
+            if (phase == null)
+            {
+                sequenceRunning = false;
+                yield break;
+            }
+
+            Debug.Log($"🔁 Resuming small phase {currentSmallPhaseIndex + 1}");
+
+            // Re-spawn ghosts and continue from current phase
+            yield return StartCoroutine(SpawnGhostsForPhase(phase));
+
+            if (phase.waypoints != null && phase.waypoints.Count > 0)
+            {
+                foreach (var wp in phase.waypoints)
+                {
+                    yield return StartCoroutine(MoveCharacterWithProjectiles(null, new List<PhaseWaypoint> { wp }, phase.pauseDuration));
+                }
+            }
+
+            List<Coroutine> ghostCoroutines = new List<Coroutine>();
+            if (phase.ghostsInPhase != null)
+            {
+                foreach (var ghostData in phase.ghostsInPhase)
+                {
+                    Transform spawnedGhost = FindSpawnedGhost(ghostData);
+                    if (spawnedGhost != null && ghostData.ghostWaypoints != null && ghostData.ghostWaypoints.Count > 0)
+                    {
+                        if (!ghostProjectiles.ContainsKey(spawnedGhost))
+                        {
+                            ghostProjectiles[spawnedGhost] = new List<GameObject>();
+                        }
+
+                        if (ghostData.enableGoldTrail && ghostTrails.ContainsKey(spawnedGhost))
+                        {
+                            ghostTrails[spawnedGhost].emitting = true;
+                            Debug.Log($"✨ Gold trail ENABLED for ghost");
+                        }
+
+                        ghostCoroutines.Add(StartCoroutine(
+                            MoveGhostWithProjectiles(spawnedGhost, ghostData.ghostWaypoints, phase.pauseDuration)
+                        ));
+                    }
+                }
+            }
+
+            foreach (var c in ghostCoroutines) yield return c;
+
+            foreach (var trail in ghostTrails.Values)
+            {
+                if (trail != null)
+                {
+                    trail.emitting = false;
+                    Debug.Log("✨ Gold trail DISABLED - ghost stopped moving");
+                }
+            }
+
+            DestroyAllGhostProjectiles();
+
+            if (phase.wandererWaypoints != null && phase.wandererWaypoints.Count > 0)
+            {
+                yield return StartCoroutine(MoveWandererWithProjectiles(phase.wandererWaypoints, phase.pauseDuration));
+            }
+
+            DestroyAllGhosts();
+
+            Debug.Log($"✅ Small phase {currentSmallPhaseIndex + 1} completed");
+
+            // Move to next phase and continue the sequence
+            currentSmallPhaseIndex++;
+            if (currentSmallPhaseIndex < smallPhases.Count)
+            {
+                StartCoroutine(RunSequence());
+            }
+            else
+            {
+                sequenceRunning = false;
+                Debug.Log("🎯 All small phases complete.");
+            }
+        }
+        else
+        {
+            sequenceRunning = false;
+        }
+    }
     public bool IsSequenceFinished()
     {
         return !sequenceRunning && currentSmallPhaseIndex >= smallPhases.Count;

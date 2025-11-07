@@ -45,7 +45,7 @@ public class ColliderController_NewInput : MonoBehaviour
         MoveActiveCylinderWithMouse();
         HandleMouseClick();
 
-        // Constrain all cylinders to the plane
+        // Constrain all cylinders to the plane (only non-standing ones)
         ConstrainAllCylindersToPlane();
     }
 
@@ -94,18 +94,29 @@ public class ColliderController_NewInput : MonoBehaviour
         Vector2 mousePos = Mouse.current.position.ReadValue();
         Ray ray = Camera.main.ScreenPointToRay(mousePos);
 
-        // Create a plane that matches the restriction plane's orientation
-        Plane restrictionPlaneGeometry = new Plane(restrictionPlane.up, restrictionPlane.position);
-
-        // Raycast against the oriented plane
-        if (restrictionPlaneGeometry.Raycast(ray, out float distance))
+        if (isStanding[activeIndex])
         {
-            Vector3 targetPos = ray.GetPoint(distance);
+            // CHANGED: For standing cylinders, create a plane at the cylinder's current height
+            Vector3 cylinderCurrentPos = cylinders[activeIndex].transform.position;
+            Plane heightPlane = new Plane(restrictionPlane.up, cylinderCurrentPos);
 
-            // Apply offset along the plane's normal
-            targetPos += restrictionPlane.up * planeOffset;
+            if (heightPlane.Raycast(ray, out float distance))
+            {
+                Vector3 targetPos = ray.GetPoint(distance);
+                cylinders[activeIndex].transform.position = targetPos;
+            }
+        }
+        else
+        {
+            // Original behavior for non-standing cylinders
+            Plane restrictionPlaneGeometry = new Plane(restrictionPlane.up, restrictionPlane.position);
 
-            cylinders[activeIndex].transform.position = targetPos;
+            if (restrictionPlaneGeometry.Raycast(ray, out float distance))
+            {
+                Vector3 targetPos = ray.GetPoint(distance);
+                targetPos += restrictionPlane.up * planeOffset;
+                cylinders[activeIndex].transform.position = targetPos;
+            }
         }
     }
 
@@ -115,15 +126,85 @@ public class ColliderController_NewInput : MonoBehaviour
         {
             isStanding[activeIndex] = !isStanding[activeIndex];
 
-            // If we have a restriction plane, standing just toggles the visual state
-            if (restrictionPlane != null)
+            // Immediately apply the height change
+            if (cylinders[activeIndex] != null)
             {
-                Debug.Log($"Cylinder {activeIndex} is now {(isStanding[activeIndex] ? "standing" : "lying")} on plane");
+                Vector3 currentPlanePos = GetPlanePosition(cylinders[activeIndex].transform.position);
+
+                if (isStanding[activeIndex])
+                {
+                    // Move to plane position + standing height
+                    cylinders[activeIndex].transform.position = currentPlanePos + restrictionPlane.up * standingHeight;
+                    Debug.Log($"🔼 Cylinder {activeIndex} snapped UP to height {standingHeight}");
+                }
+                else
+                {
+                    // Snap back to plane
+                    cylinders[activeIndex].transform.position = currentPlanePos;
+                    Debug.Log($"🔽 Cylinder {activeIndex} snapped DOWN to plane");
+                }
             }
         }
     }
 
-    // NEW: Update screen tint based on active cylinder
+    // Only constrain cylinders that are NOT standing
+    void ConstrainAllCylindersToPlane()
+    {
+        if (restrictionPlane == null) return;
+
+        for (int i = 0; i < cylinders.Length; i++)
+        {
+            if (cylinders[i] != null && !isStanding[i])
+            {
+                SnapCylinderToPlane(cylinders[i].transform);
+            }
+        }
+    }
+
+    // Only snap cylinders that are NOT standing
+    void SnapCylinderToPlane(Transform cylinderTransform)
+    {
+        if (restrictionPlane == null) return;
+
+        int cylinderIndex = System.Array.IndexOf(cylinders, cylinderTransform.gameObject);
+        if (cylinderIndex == -1) return;
+
+        // Only snap to plane if the cylinder is NOT standing
+        if (!isStanding[cylinderIndex])
+        {
+            // Project the cylinder's position onto the plane
+            Vector3 planeNormal = restrictionPlane.up;
+            Vector3 planePoint = restrictionPlane.position;
+            Vector3 cylinderPos = cylinderTransform.position;
+
+            // Calculate the projection onto the plane
+            Vector3 projectedPos = cylinderPos - Vector3.Dot(cylinderPos - planePoint, planeNormal) * planeNormal;
+
+            // Apply offset along the plane's normal
+            projectedPos += planeNormal * planeOffset;
+
+            cylinderTransform.position = projectedPos;
+        }
+    }
+
+    // Public method to get the plane-restricted position (with rotation)
+    public Vector3 GetPlanePosition(Vector3 worldPosition)
+    {
+        if (restrictionPlane != null)
+        {
+            Vector3 planeNormal = restrictionPlane.up;
+            Vector3 planePoint = restrictionPlane.position;
+
+            // Project onto the plane
+            worldPosition = worldPosition - Vector3.Dot(worldPosition - planePoint, planeNormal) * planeNormal;
+
+            // Apply offset
+            worldPosition += planeNormal * planeOffset;
+        }
+        return worldPosition;
+    }
+
+    // Update screen tint based on active cylinder
     void UpdateScreenTint()
     {
         if (screenTintMaterial == null)
@@ -152,56 +233,6 @@ public class ColliderController_NewInput : MonoBehaviour
 
         // Apply the tint color to the material
         screenTintMaterial.color = targetColor;
-    }
-
-    // Constrain all cylinders to the restriction plane (with rotation)
-    void ConstrainAllCylindersToPlane()
-    {
-        if (restrictionPlane == null) return;
-
-        foreach (var cylinder in cylinders)
-        {
-            if (cylinder != null)
-            {
-                SnapCylinderToPlane(cylinder.transform);
-            }
-        }
-    }
-
-    // Snap a cylinder to the restriction plane (with rotation)
-    void SnapCylinderToPlane(Transform cylinderTransform)
-    {
-        if (restrictionPlane == null) return;
-
-        // Project the cylinder's position onto the plane
-        Vector3 planeNormal = restrictionPlane.up;
-        Vector3 planePoint = restrictionPlane.position;
-        Vector3 cylinderPos = cylinderTransform.position;
-
-        // Calculate the projection onto the plane
-        Vector3 projectedPos = cylinderPos - Vector3.Dot(cylinderPos - planePoint, planeNormal) * planeNormal;
-
-        // Apply offset along the plane's normal
-        projectedPos += planeNormal * planeOffset;
-
-        cylinderTransform.position = projectedPos;
-    }
-
-    // Public method to get the plane-restricted position (with rotation)
-    public Vector3 GetPlanePosition(Vector3 worldPosition)
-    {
-        if (restrictionPlane != null)
-        {
-            Vector3 planeNormal = restrictionPlane.up;
-            Vector3 planePoint = restrictionPlane.position;
-
-            // Project onto the plane
-            worldPosition = worldPosition - Vector3.Dot(worldPosition - planePoint, planeNormal) * planeNormal;
-
-            // Apply offset
-            worldPosition += planeNormal * planeOffset;
-        }
-        return worldPosition;
     }
 
     // Public method to check if a position is on the plane (with rotation)

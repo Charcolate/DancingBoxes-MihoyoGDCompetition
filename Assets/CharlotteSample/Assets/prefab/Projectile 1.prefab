@@ -131,6 +131,9 @@ MonoBehaviour:
   trailWidth: 0.3
   trailTime: 60
   trailMaterial: {fileID: 0}
+  canReflectOffCylinders: 1
+  reflectionSpeedMultiplier: 1
+  targetHeightOffset: 3
 --- !u!120 &2191032142997440774
 LineRenderer:
   serializedVersion: 2
