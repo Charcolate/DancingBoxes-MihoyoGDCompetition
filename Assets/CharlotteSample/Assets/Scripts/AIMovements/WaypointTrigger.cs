@@ -249,11 +249,13 @@ public class WaypointTrigger : MonoBehaviour
                 Debug.Log("🔄 Playing fall animation (no cylinders in waypoint)");
 
                 // Wait for fall animation to complete
-                yield return new WaitForSeconds(1.0f);
+                yield return new WaitUntil(() => movementAnimator.IsFallAnimationComplete());
+
+                Debug.Log("🎯 Fall animation complete, now respawning from waypoint");
             }
         }
 
-        // Trigger respawn after fall animation
+        // Now trigger the respawn AFTER fall animation completes
         if (goalManager != null)
         {
             goalManager.OnWandererInWaypointWithoutCylinders(GetComponent<Collider>());
@@ -267,6 +269,7 @@ public class WaypointTrigger : MonoBehaviour
             Debug.LogError($"❌ No goal system connected - cannot trigger respawn!");
         }
     }
+
     // Clean up destroyed objects
     private void FixedUpdate()
     {

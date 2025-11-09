@@ -19,6 +19,7 @@ public class GhostMovementAnimator : MonoBehaviour
         if (!isMoving)
         {
             isMoving = true;
+            Debug.Log($"👻 GHOST StartMoving called on: {gameObject.name}");
             TriggerRandomJump();
         }
     }
@@ -36,10 +37,11 @@ public class GhostMovementAnimator : MonoBehaviour
     {
         if (animator != null)
         {
-            int randomJump = Random.Range(1, 4); // 1, 2, or 3
-            // Use DIFFERENT parameter name for ghost
+            int randomJump = Random.Range(1, 4);
             animator.SetInteger("GhostJump", randomJump);
-            Debug.Log($"👻 Ghost jump animation {randomJump} triggered - GhostJump: {animator.GetInteger("GhostJump")}");
+
+            // ADD ONLY THIS DEBUG:
+            Debug.Log($"👻 GHOST jumping: {gameObject.name} - GhostJump: {randomJump}");
         }
     }
 
@@ -47,7 +49,6 @@ public class GhostMovementAnimator : MonoBehaviour
     {
         if (animator != null)
         {
-            // Use DIFFERENT parameter name for ghost
             animator.SetInteger("GhostJump", 0);
         }
     }

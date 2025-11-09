@@ -1,243 +1,211 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class SphericalCameraFollow : MonoBehaviour
 {
-    [Header("Camera Settings")]
-    public Transform[] cameraPositions; // Array of spawn points for camera positions
-    public Transform focusPoint; // The point the camera should always look at
+    [System.Serializable]
+    public class PhaseCamera
+    {
+        public string phaseName;
+        public Transform cameraTransform;
+        [HideInInspector] public float transitionDuration = 2.0f; // Always 2 seconds
+        [HideInInspector] public bool waitForPhaseCompletion = true; // Always wait
+    }
 
-    [Header("Movement Settings")]
-    public float movementSpeed = 2.0f; // Speed of camera movement
-    public AnimationCurve movementCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [Header("References")]
+    public GoalManager goalManager;
+    public Camera mainCamera;
 
-    [Header("Phase Integration")]
-    public GoalManager goalManager; // Reference to the GoalManager to track phases
+    [Header("Phase Cameras")]
+    public List<PhaseCamera> phaseCameras = new List<PhaseCamera>();
 
-    private int currentPositionIndex = 0;
-    private bool isMoving = false;
-    private bool isActive = false;
-    private int lastCompletedPhase = -1;
+    [Header("Settings")]
+    public bool autoCycle = true;
+    private const float TRANSITION_DURATION = 2.0f; // Always 2 seconds
+
+    private int currentCameraIndex = -1;
+    private int targetCameraIndex = -1;
+    private bool isTransitioning = false;
+    private Vector3 transitionVelocity = Vector3.zero;
 
     void Start()
     {
-        // Validate setup
-        if (cameraPositions == null || cameraPositions.Length == 0)
-        {
-            Debug.LogError("No camera positions assigned!");
-            return;
-        }
-
-        if (focusPoint == null)
-        {
-            Debug.LogError("No focus point assigned!");
-            return;
-        }
+        if (mainCamera == null)
+            mainCamera = Camera.main;
 
         if (goalManager == null)
+            goalManager = FindObjectOfType<GoalManager>();
+
+        // Start with first camera if phases exist
+        if (phaseCameras.Count > 0 && goalManager != null)
         {
-            Debug.LogError("No GoalManager assigned!");
-            return;
+            int startPhase = goalManager.GetCurrentSmallPhaseIndex();
+            if (startPhase < phaseCameras.Count)
+            {
+                currentCameraIndex = startPhase;
+                targetCameraIndex = startPhase;
+                // Snap immediately to start camera (no transition)
+                SnapToCamera(phaseCameras[startPhase]);
+            }
         }
-
-        // Start at first position
-        transform.position = cameraPositions[0].position;
-        LookAtFocusPoint();
-
-        // Start automatic movement
-        StartAutomaticMovement();
     }
 
     void Update()
     {
-        if (!isActive || goalManager == null) return;
+        if (!autoCycle || goalManager == null) return;
 
-        // Check if a small phase has completed using the public property
-        int currentPhase = goalManager.CurrentSmallPhaseIndex;
+        int currentPhase = goalManager.GetCurrentSmallPhaseIndex();
 
-        // If we've moved to a new phase and we're not already moving the camera
-        if (currentPhase > lastCompletedPhase && !isMoving)
+        // Only switch cameras when phase changes AND we're not already transitioning
+        if (currentPhase < phaseCameras.Count && currentPhase != targetCameraIndex && !isTransitioning)
         {
-            lastCompletedPhase = currentPhase;
-            MoveToNextPosition();
-            Debug.Log($"📸 Camera moving due to phase completion: Phase {currentPhase}");
-        }
-
-        // Always look at focus point when not moving
-        if (focusPoint != null && !isMoving)
-        {
-            LookAtFocusPoint();
+            targetCameraIndex = currentPhase;
+            StartCoroutine(TransitionToCamera(phaseCameras[currentPhase]));
         }
     }
 
-    public void StartAutomaticMovement()
+    private void SnapToCamera(PhaseCamera phaseCamera)
     {
-        isActive = true;
-        lastCompletedPhase = goalManager != null ? goalManager.CurrentSmallPhaseIndex : -1;
-        Debug.Log("Automatic camera movement started (phase-based)");
+        if (phaseCamera.cameraTransform == null) return;
+
+        mainCamera.transform.position = phaseCamera.cameraTransform.position;
+        mainCamera.transform.rotation = phaseCamera.cameraTransform.rotation;
+
+        Debug.Log($"📸 Snapped to camera: {phaseCamera.phaseName}");
     }
 
-    public void StopAutomaticMovement()
+    private System.Collections.IEnumerator TransitionToCamera(PhaseCamera phaseCamera)
     {
-        isActive = false;
-        Debug.Log("Automatic camera movement stopped");
-    }
+        if (phaseCamera.cameraTransform == null || isTransitioning) yield break;
 
-    public void MoveToPosition(int positionIndex)
-    {
-        if (isMoving || cameraPositions == null || positionIndex < 0 || positionIndex >= cameraPositions.Length)
-            return;
+        isTransitioning = true;
 
-        StartCoroutine(MoveCameraToPosition(positionIndex));
-    }
+        Transform targetTransform = phaseCamera.cameraTransform;
+        float elapsedTime = 0f;
 
-    public void MoveToNextPosition()
-    {
-        if (cameraPositions == null || cameraPositions.Length == 0)
-            return;
+        Vector3 startPosition = mainCamera.transform.position;
+        Quaternion startRotation = mainCamera.transform.rotation;
 
-        int nextIndex = currentPositionIndex + 1;
+        Debug.Log($"🎬 Starting 2s transition to: {phaseCamera.phaseName}");
 
-        // Handle looping or stopping at the end
-        if (nextIndex >= cameraPositions.Length)
+        while (elapsedTime < TRANSITION_DURATION)
         {
-            nextIndex = 0; // Always loop for phase-based movement
-        }
+            float t = elapsedTime / TRANSITION_DURATION;
 
-        MoveToPosition(nextIndex);
-    }
+            // Smooth position transition
+            mainCamera.transform.position = Vector3.Lerp(startPosition, targetTransform.position, t);
 
-    public void MoveToPreviousPosition()
-    {
-        if (cameraPositions == null || cameraPositions.Length == 0)
-            return;
+            // Smooth rotation transition
+            mainCamera.transform.rotation = Quaternion.Lerp(startRotation, targetTransform.rotation, t);
 
-        int prevIndex = currentPositionIndex - 1;
-
-        if (prevIndex < 0)
-        {
-            prevIndex = cameraPositions.Length - 1;
-        }
-
-        MoveToPosition(prevIndex);
-    }
-
-    private IEnumerator MoveCameraToPosition(int newPositionIndex)
-    {
-        isMoving = true;
-
-        Transform targetPosition = cameraPositions[newPositionIndex];
-        Vector3 startPosition = transform.position;
-        Quaternion startRotation = transform.rotation;
-
-        float journey = 0f;
-
-        while (journey <= 1f)
-        {
-            journey += Time.deltaTime * movementSpeed;
-            float percent = movementCurve.Evaluate(journey);
-
-            // Move position
-            transform.position = Vector3.Lerp(startPosition, targetPosition.position, percent);
-
-            // Smoothly rotate to look at focus point during movement
-            Vector3 directionToFocus = focusPoint.position - transform.position;
-            Quaternion targetRotation = Quaternion.LookRotation(directionToFocus);
-            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, percent);
-
+            elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        // Ensure final position and rotation
-        transform.position = targetPosition.position;
-        LookAtFocusPoint();
+        // Ensure exact final position and rotation
+        mainCamera.transform.position = targetTransform.position;
+        mainCamera.transform.rotation = targetTransform.rotation;
 
-        currentPositionIndex = newPositionIndex;
-        isMoving = false;
+        currentCameraIndex = targetCameraIndex;
+        isTransitioning = false;
 
-        Debug.Log($"📸 Camera moved to position {newPositionIndex + 1}/{cameraPositions.Length} (Phase {lastCompletedPhase})");
+        Debug.Log($"✅ Completed transition to: {phaseCamera.phaseName}");
     }
 
-    private void LookAtFocusPoint()
+    // Called by GoalManager when a phase completes
+    public void OnPhaseCompleted(int phaseIndex)
     {
-        if (focusPoint != null)
+        if (!autoCycle) return;
+
+        int nextPhase = phaseIndex + 1;
+
+        // If we have a camera for the next phase, switch to it
+        if (nextPhase < phaseCameras.Count && !isTransitioning)
         {
-            transform.LookAt(focusPoint);
+            targetCameraIndex = nextPhase;
+            StartCoroutine(TransitionToCamera(phaseCameras[nextPhase]));
+        }
+        else if (nextPhase >= phaseCameras.Count)
+        {
+            Debug.Log("🎬 All phase cameras completed!");
         }
     }
 
-    // Public methods for control from other scripts
-    public void SetFocusPoint(Transform newFocusPoint)
+    // Manual control methods
+    public void SwitchToCamera(string cameraName)
     {
-        focusPoint = newFocusPoint;
-        LookAtFocusPoint();
-    }
-
-    public void SetMovementSpeed(float speed)
-    {
-        movementSpeed = Mathf.Max(0.1f, speed);
-    }
-
-    // Method to manually trigger camera move (useful for testing)
-    public void TriggerPhaseBasedMove()
-    {
-        if (goalManager != null)
+        for (int i = 0; i < phaseCameras.Count; i++)
         {
-            lastCompletedPhase = goalManager.CurrentSmallPhaseIndex;
-            MoveToNextPosition();
-        }
-    }
-
-    public void JumpToPosition(int positionIndex)
-    {
-        if (cameraPositions != null && positionIndex >= 0 && positionIndex < cameraPositions.Length)
-        {
-            StopAllCoroutines();
-            transform.position = cameraPositions[positionIndex].position;
-            LookAtFocusPoint();
-            currentPositionIndex = positionIndex;
-            isMoving = false;
-        }
-    }
-
-    public bool IsMoving
-    {
-        get { return isMoving; }
-    }
-
-    public int CurrentPositionIndex
-    {
-        get { return currentPositionIndex; }
-    }
-
-    public int TotalPositions
-    {
-        get { return cameraPositions != null ? cameraPositions.Length : 0; }
-    }
-
-    // Gizmos for visual debugging in Scene view
-    void OnDrawGizmosSelected()
-    {
-        if (cameraPositions != null)
-        {
-            Gizmos.color = Color.blue;
-            foreach (Transform pos in cameraPositions)
+            if (phaseCameras[i].phaseName == cameraName && !isTransitioning)
             {
-                if (pos != null)
-                {
-                    Gizmos.DrawWireSphere(pos.position, 0.1f);
-                    if (focusPoint != null)
-                    {
-                        Gizmos.DrawLine(pos.position, focusPoint.position);
-                    }
-                }
+                targetCameraIndex = i;
+                StartCoroutine(TransitionToCamera(phaseCameras[i]));
+                return;
             }
         }
+        Debug.LogWarning($"PhaseCameraManager: Camera with name '{cameraName}' not found or already transitioning!");
+    }
 
-        if (focusPoint != null)
+    public void SetAutoCycle(bool enable)
+    {
+        autoCycle = enable;
+    }
+
+    public string GetCurrentCameraName()
+    {
+        if (currentCameraIndex >= 0 && currentCameraIndex < phaseCameras.Count)
+            return phaseCameras[currentCameraIndex].phaseName;
+        return "No Camera";
+    }
+
+    public int GetCurrentCameraIndex()
+    {
+        return currentCameraIndex;
+    }
+
+    public bool IsTransitioning()
+    {
+        return isTransitioning;
+    }
+
+    // Editor helper
+    void OnValidate()
+    {
+        // Ensure phase names are unique and set fixed values
+        HashSet<string> usedNames = new HashSet<string>();
+        for (int i = 0; i < phaseCameras.Count; i++)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(focusPoint.position, 0.2f);
+            if (string.IsNullOrEmpty(phaseCameras[i].phaseName))
+            {
+                phaseCameras[i].phaseName = $"Phase {i}";
+            }
+
+            if (usedNames.Contains(phaseCameras[i].phaseName))
+            {
+                phaseCameras[i].phaseName = $"{phaseCameras[i].phaseName} {i}";
+            }
+            usedNames.Add(phaseCameras[i].phaseName);
+
+            // Force fixed values
+            phaseCameras[i].transitionDuration = TRANSITION_DURATION;
+            phaseCameras[i].waitForPhaseCompletion = true;
+        }
+    }
+
+    // Gizmos to visualize camera positions in scene
+    void OnDrawGizmosSelected()
+    {
+        if (phaseCameras == null) return;
+
+        Gizmos.color = Color.cyan;
+        foreach (var phaseCamera in phaseCameras)
+        {
+            if (phaseCamera.cameraTransform != null)
+            {
+                Gizmos.DrawWireSphere(phaseCamera.cameraTransform.position, 0.5f);
+                Gizmos.DrawLine(phaseCamera.cameraTransform.position, phaseCamera.cameraTransform.position + phaseCamera.cameraTransform.forward * 2f);
+            }
         }
     }
 }

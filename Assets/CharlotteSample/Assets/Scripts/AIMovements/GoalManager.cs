@@ -83,6 +83,9 @@ public class GoalManager : MonoBehaviour
     [Header("Respawn Settings")]
     public int maxRespawnsPerBigPhase = 3;
 
+    [Header("Camera System")]
+    public SphericalCameraFollow phaseCameraManager;
+
     [Header("Gizmos Settings")]
     public bool showWaypointsGizmos = true;
     public bool showSphereGizmo = true;
@@ -122,24 +125,6 @@ public class GoalManager : MonoBehaviour
         {
             Debug.LogError("GoalManager: Wanderer not assigned!");
             return;
-        }
-
-        // DEBUG: Check animator components
-        Animator animator = wanderer.GetComponent<Animator>();
-        WandererMovementAnimator movementAnimator = wanderer.GetComponent<WandererMovementAnimator>();
-
-        Debug.Log($"🔍 Wanderer Animator Check:");
-        Debug.Log($"   - Animator component: {animator != null}");
-        Debug.Log($"   - WandererMovementAnimator: {movementAnimator != null}");
-
-        if (animator != null)
-        {
-            Debug.Log($"   - Animator controller: {animator.runtimeAnimatorController != null}");
-            Debug.Log($"   - Parameters count: {animator.parameterCount}");
-            foreach (AnimatorControllerParameter param in animator.parameters)
-            {
-                Debug.Log($"     Parameter: {param.name} (Type: {param.type})");
-            }
         }
 
         if (smallPhases.Count == 0)
@@ -329,10 +314,17 @@ public class GoalManager : MonoBehaviour
 
             Debug.Log($"🔁 Starting small phase {currentSmallPhaseIndex + 1} at position: {currentSmallPhaseStartPos}");
 
+            // NOTIFY CAMERA MANAGER - Phase is starting
+            if (phaseCameraManager != null)
+            {
+                // Camera will automatically transition to this phase's camera over 2 seconds
+                phaseCameraManager.OnPhaseCompleted(currentSmallPhaseIndex - 1); // Complete previous phase
+            }
+
             // Clear previous phase ghosts and projectiles
             DestroyAllGhosts();
             ghostProjectiles.Clear();
-            ghostTrails.Clear(); // NEW: Clear trail references
+            ghostTrails.Clear();
 
             // -----------------------
             // SPAWN GHOSTS at wanderer's current position
@@ -344,7 +336,6 @@ public class GoalManager : MonoBehaviour
             {
                 foreach (var wp in phase.waypoints)
                 {
-                    // Snap waypoint to sphere surface
                     SnapWaypointToSphere(wp);
                     yield return StartCoroutine(MoveCharacterWithProjectiles(null, new List<PhaseWaypoint> { wp }, phase.pauseDuration));
                 }
@@ -357,24 +348,19 @@ public class GoalManager : MonoBehaviour
             {
                 foreach (var ghostData in phase.ghostsInPhase)
                 {
-                    // Find the spawned ghost for this ghost data
                     Transform spawnedGhost = FindSpawnedGhost(ghostData);
                     if (spawnedGhost != null && ghostData.ghostWaypoints != null && ghostData.ghostWaypoints.Count > 0)
                     {
-                        // Initialize projectile list for this ghost
                         if (!ghostProjectiles.ContainsKey(spawnedGhost))
                         {
                             ghostProjectiles[spawnedGhost] = new List<GameObject>();
                         }
 
-                        // NEW: Enable trail if configured
                         if (ghostData.enableGoldTrail && ghostTrails.ContainsKey(spawnedGhost))
                         {
                             ghostTrails[spawnedGhost].emitting = true;
-                            Debug.Log($"✨ Gold trail ENABLED for ghost");
                         }
 
-                        // Snap all ghost waypoints to sphere surface
                         foreach (var wp in ghostData.ghostWaypoints)
                         {
                             SnapWaypointToSphere(wp);
@@ -384,23 +370,17 @@ public class GoalManager : MonoBehaviour
                             MoveGhostWithProjectiles(spawnedGhost, ghostData.ghostWaypoints, phase.pauseDuration)
                         ));
                     }
-                    else
-                    {
-                        Debug.LogWarning($"❌ Could not find spawned ghost for ghost data");
-                    }
                 }
             }
 
             // Wait for all ghosts to complete their entire small phase movement
             foreach (var c in ghostCoroutines) yield return c;
 
-            // NEW: Disable all trails after movement completes
             foreach (var trail in ghostTrails.Values)
             {
                 if (trail != null)
                 {
                     trail.emitting = false;
-                    Debug.Log("✨ Gold trail DISABLED - ghost stopped moving");
                 }
             }
 
@@ -411,7 +391,6 @@ public class GoalManager : MonoBehaviour
             // Move wanderer with ONE projectile (no visual)
             if (phase.wandererWaypoints != null && phase.wandererWaypoints.Count > 0)
             {
-                // Snap all wanderer waypoints to sphere surface
                 foreach (var wp in phase.wandererWaypoints)
                 {
                     SnapWaypointToSphere(wp);
@@ -423,7 +402,13 @@ public class GoalManager : MonoBehaviour
             // Destroy ghosts at the end of the small phase
             DestroyAllGhosts();
 
-            Debug.Log($"✅ Small phase {currentSmallPhaseIndex + 1} completed - camera should move now");
+            Debug.Log($"✅ Small phase {currentSmallPhaseIndex + 1} completed");
+
+            // NOTIFY CAMERA MANAGER - Phase is complete, ready for next camera
+            if (phaseCameraManager != null)
+            {
+                phaseCameraManager.OnPhaseCompleted(currentSmallPhaseIndex);
+            }
 
             currentSmallPhaseIndex++;
 
@@ -496,7 +481,6 @@ public class GoalManager : MonoBehaviour
                 TrailRenderer trail = ghost.AddComponent<TrailRenderer>();
                 SetupGoldTrail(trail, ghostData);
                 ghostTrails[ghost.transform] = trail;
-                Debug.Log($"✨ Gold trail ADDED to ghost '{ghost.name}'");
             }
 
             // Update the ghostData with the new ghost transform
@@ -605,133 +589,126 @@ public class GoalManager : MonoBehaviour
         Debug.Log($"✅ Destroyed all ghosts. List count: {spawnedGhosts.Count}");
     }
 
-
     protected virtual IEnumerator MoveGhostWithProjectiles(Transform ghost, List<PhaseWaypoint> waypoints, float pauseDuration)
-{
+    {
         // Get the ghost's animator component
         GhostMovementAnimator ghostAnimator = ghost.GetComponent<GhostMovementAnimator>();
-
         if (ghostAnimator != null)
-    {
-        ghostAnimator.StartMoving();
-        Debug.Log($"👻 Ghost started moving with jump animation");
-    }
-
-    // NEW: Enable trail at start of movement if configured
-    bool hasTrail = ghostTrails.ContainsKey(ghost) && ghostTrails[ghost] != null;
-    if (hasTrail)
-    {
-        ghostTrails[ghost].emitting = true;
-        ghostTrails[ghost].Clear(); // Clear any existing trail
-        Debug.Log($"✨ Gold trail STARTED for ghost");
-    }
-
-    // Move through all waypoints in the small phase
-    foreach (PhaseWaypoint wp in waypoints)
-    {
-        if (wp.waypointTransform == null) continue;
-
-        Vector3 target = wp.waypointTransform.position;
-        bool projectileFired = false;
-
-        while (ghost != null && Vector3.Distance(ghost.position, target) > reachThreshold)
         {
-            Vector3 moveDirection = (target - ghost.position).normalized;
-            
-            // Use sphere movement with rotation for ghosts
-            if (sphereCenter != null)
+            ghostAnimator.StartMoving();
+        }
+
+        // NEW: Enable trail at start of movement if configured
+        bool hasTrail = ghostTrails.ContainsKey(ghost) && ghostTrails[ghost] != null;
+        if (hasTrail)
+        {
+            ghostTrails[ghost].emitting = true;
+            ghostTrails[ghost].Clear(); // Clear any existing trail
+        }
+
+        // Move through all waypoints in the small phase
+        foreach (PhaseWaypoint wp in waypoints)
+        {
+            if (wp.waypointTransform == null) continue;
+
+            Vector3 target = wp.waypointTransform.position;
+            bool projectileFired = false;
+
+            while (ghost != null && Vector3.Distance(ghost.position, target) > reachThreshold)
             {
-                var (newPosition, newRotation) = SphereMover.MoveOnSphere(
-                    ghost.position, target, sphereCenter.position, sphereRadius, moveSpeed * Time.deltaTime);
-                ghost.position = newPosition;
-                
-                // FORCE facing the tangent direction of movement on sphere
-                if (moveDirection != Vector3.zero)
+                Vector3 moveDirection = (target - ghost.position).normalized;
+
+                // Use sphere movement with rotation for ghosts
+                if (sphereCenter != null)
                 {
-                    // Calculate tangent direction for sphere movement
-                    Vector3 radialDirection = (ghost.position - sphereCenter.position).normalized;
-                    Vector3 tangentDirection = Vector3.Cross(radialDirection, moveDirection).normalized;
-                    tangentDirection = Vector3.Cross(tangentDirection, radialDirection).normalized;
-                    
-                    if (tangentDirection != Vector3.zero)
+                    var (newPosition, newRotation) = SphereMover.MoveOnSphere(
+                        ghost.position, target, sphereCenter.position, sphereRadius, moveSpeed * Time.deltaTime);
+                    ghost.position = newPosition;
+
+                    // FORCE facing the tangent direction of movement on sphere
+                    if (moveDirection != Vector3.zero)
                     {
-                        ghost.rotation = Quaternion.LookRotation(tangentDirection, radialDirection);
+                        // Calculate tangent direction for sphere movement
+                        Vector3 radialDirection = (ghost.position - sphereCenter.position).normalized;
+                        Vector3 tangentDirection = Vector3.Cross(radialDirection, moveDirection).normalized;
+                        tangentDirection = Vector3.Cross(tangentDirection, radialDirection).normalized;
+
+                        if (tangentDirection != Vector3.zero)
+                        {
+                            ghost.rotation = Quaternion.LookRotation(tangentDirection, radialDirection);
+                        }
                     }
                 }
-            }
-            else
-            {
-                // Fallback to straight line movement
-                ghost.position = Vector3.MoveTowards(ghost.position, target, moveSpeed * Time.deltaTime);
-                
-                // Face the movement direction
-                if (moveDirection != Vector3.zero)
+                else
                 {
-                    ghost.rotation = Quaternion.LookRotation(moveDirection);
+                    // Fallback to straight line movement
+                    ghost.position = Vector3.MoveTowards(ghost.position, target, moveSpeed * Time.deltaTime);
+
+                    // Face the movement direction
+                    if (moveDirection != Vector3.zero)
+                    {
+                        ghost.rotation = Quaternion.LookRotation(moveDirection);
+                    }
+                }
+
+                if (wp.triggerProjectile && !projectileFired)
+                {
+                    float remainingDistance = Vector3.Distance(ghost.position, target);
+                    float leadDistance = moveSpeed * wp.leadTime;
+
+                    if (remainingDistance <= leadDistance)
+                    {
+                        // Calculate exact speed for projectile to arrive at same time as ghost
+                        float projectileDistance = Vector3.Distance(
+                            (wp.customSpawnTransforms != null && wp.customSpawnTransforms.Count > 0)
+                                ? wp.customSpawnTransforms[0].position
+                                : projectileSpawner.transform.position,
+                            target
+                        );
+
+                        float timeToArrival = remainingDistance / moveSpeed;
+                        float requiredProjectileSpeed = projectileDistance / timeToArrival;
+
+                        // Fire ghost projectile (does NOT destroy on collision, WITH visual)
+                        FireGhostProjectiles(ghost, wp, requiredProjectileSpeed);
+                        projectileFired = true;
+                    }
+                }
+
+                yield return null;
+            }
+
+            if (ghost != null)
+            {
+                // Ensure final position and rotation are correct
+                if (sphereCenter != null)
+                {
+                    SnapToSphereSurface(ghost);
+                }
+                else
+                {
+                    ghost.position = target;
                 }
             }
 
-            if (wp.triggerProjectile && !projectileFired)
-            {
-                float remainingDistance = Vector3.Distance(ghost.position, target);
-                float leadDistance = moveSpeed * wp.leadTime;
-
-                if (remainingDistance <= leadDistance)
-                {
-                    // Calculate exact speed for projectile to arrive at same time as ghost
-                    float projectileDistance = Vector3.Distance(
-                        (wp.customSpawnTransforms != null && wp.customSpawnTransforms.Count > 0)
-                            ? wp.customSpawnTransforms[0].position
-                            : projectileSpawner.transform.position,
-                        target
-                    );
-
-                    float timeToArrival = remainingDistance / moveSpeed;
-                    float requiredProjectileSpeed = projectileDistance / timeToArrival;
-
-                    // Fire ghost projectile (does NOT destroy on collision, WITH visual)
-                    FireGhostProjectiles(ghost, wp, requiredProjectileSpeed);
-                    projectileFired = true;
-                }
-            }
-
-            yield return null;
+            yield return new WaitForSeconds(pauseDuration);
         }
 
-        if (ghost != null)
+        // Stop the ghost's jump animation
+        if (ghostAnimator != null)
         {
-            // Ensure final position and rotation are correct
-            if (sphereCenter != null)
-            {
-                SnapToSphereSurface(ghost);
-            }
-            else
-            {
-                ghost.position = target;
-            }
+            ghostAnimator.StopMoving();
         }
 
-        yield return new WaitForSeconds(pauseDuration);
+        // NEW: Disable trail at end of movement
+        if (hasTrail)
+        {
+            ghostTrails[ghost].emitting = false;
+        }
+
+        // Ghost has completed all waypoints in this small phase
+        // Projectiles will be destroyed after ALL ghosts finish (in RunSequence)
     }
-
-    // Stop the ghost's jump animation
-    if (ghostAnimator != null)
-    {
-        ghostAnimator.StopMoving();
-        Debug.Log($"👻 Ghost stopped moving");
-    }
-
-    // NEW: Disable trail at end of movement
-    if (hasTrail)
-    {
-        ghostTrails[ghost].emitting = false;
-        Debug.Log($"✨ Gold trail STOPPED for ghost");
-    }
-
-    // Ghost has completed all waypoints in this small phase
-    // Projectiles will be destroyed after ALL ghosts finish (in RunSequence)
-}
-
 
     protected virtual IEnumerator MoveCharacterWithProjectiles(Transform character, List<PhaseWaypoint> waypoints, float pauseDuration)
     {
@@ -851,7 +828,6 @@ public class GoalManager : MonoBehaviour
                         wanderer.rotation = Quaternion.LookRotation(moveDirection);
                     }
                 }
-
 
                 // Fire ONE wanderer projectile (no visual, destroys on collision)
                 if (wp.triggerProjectile && !wandererProjectileFired)

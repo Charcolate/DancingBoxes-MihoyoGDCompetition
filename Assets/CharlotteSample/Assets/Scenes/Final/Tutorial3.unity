@@ -3414,7 +3414,7 @@ MonoBehaviour:
   standingHeight: 15
   restrictionPlane: {fileID: 1517963703}
   planeOffset: 1
-  screenTintMaterial: {fileID: 2100000, guid: c7a683283bfefc44fba52b1ae605fa1b, type: 2}
+  screenTintMaterial: {fileID: 2100000, guid: 1df5cca8f0d04d1408b9580d535b99f6, type: 2}
   qTintColor: {r: 1, g: 0, b: 0, a: 0.09803922}
   wTintColor: {r: 1, g: 0.5, b: 0, a: 0.09803922}
   defaultTintColor: {r: 1, g: 1, b: 1, a: 0}

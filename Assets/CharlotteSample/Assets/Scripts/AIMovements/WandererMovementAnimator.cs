@@ -4,6 +4,7 @@ public class WandererMovementAnimator : MonoBehaviour
 {
     private Animator animator;
     private bool isMoving = false;
+    private bool isInFallAnimation = false;
 
     void Start()
     {
@@ -14,12 +15,27 @@ public class WandererMovementAnimator : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        // Check if we're currently in fall animation and when it ends
+        if (isInFallAnimation)
+        {
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+            // Check if we're still in fall state or back to idle
+            if (stateInfo.IsName("Idle") || stateInfo.normalizedTime >= 1.0f)
+            {
+                isInFallAnimation = false;
+                Debug.Log("🔄 Fall animation completed naturally");
+            }
+        }
+    }
+
     public void StartMoving()
     {
         if (!isMoving)
         {
             isMoving = true;
-            Debug.Log($"🎬 StartMoving called - Animator exists: {animator != null}");
             TriggerRandomJump();
         }
     }
@@ -29,7 +45,6 @@ public class WandererMovementAnimator : MonoBehaviour
         if (isMoving)
         {
             isMoving = false;
-            Debug.Log($"🎬 StopMoving called");
             ReturnToIdle();
         }
     }
@@ -38,32 +53,25 @@ public class WandererMovementAnimator : MonoBehaviour
     {
         if (animator != null)
         {
-            Debug.Log($"🎬 TriggerFall called - Resetting jump and triggering fall");
             // Reset jump first
             animator.SetInteger("JumpVariation", 0);
             // Trigger fall
             animator.SetTrigger("Fall");
+            isInFallAnimation = true;
+        }
+    }
 
-            // Force update to see if parameters are set
-            Debug.Log($"🎬 Fall trigger set: {animator.GetBool("Fall")}, JumpVariation: {animator.GetInteger("JumpVariation")}");
-        }
-        else
-        {
-            Debug.LogError("❌ No animator found in TriggerFall!");
-        }
+    public bool IsFallAnimationComplete()
+    {
+        return !isInFallAnimation;
     }
 
     private void TriggerRandomJump()
     {
         if (animator != null)
         {
-            int randomJump = Random.Range(1, 4); // 1, 2, or 3
+            int randomJump = Random.Range(1, 4);
             animator.SetInteger("JumpVariation", randomJump);
-            Debug.Log($"🎬 Jump animation {randomJump} triggered - JumpVariation parameter: {animator.GetInteger("JumpVariation")}");
-        }
-        else
-        {
-            Debug.LogError("❌ No animator found in TriggerRandomJump!");
         }
     }
 
@@ -82,6 +90,7 @@ public class WandererMovementAnimator : MonoBehaviour
             animator.SetInteger("JumpVariation", 0);
             animator.ResetTrigger("Fall");
             isMoving = false;
+            isInFallAnimation = false;
         }
     }
 }

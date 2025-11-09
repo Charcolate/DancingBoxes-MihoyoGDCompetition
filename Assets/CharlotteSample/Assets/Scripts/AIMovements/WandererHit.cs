@@ -5,12 +5,12 @@ public class WandererHit : MonoBehaviour
 {
     public float flashDuration = 0.25f;
     public Color hitColor = Color.red;
-    public float fallAnimationTime = 1.0f;
 
     private Renderer rend;
     private Color originalColor;
     private GoalManager goalManager;
     private WandererMovementAnimator movementAnimator;
+    private bool isHandlingHit = false;
 
     private void Awake()
     {
@@ -20,16 +20,11 @@ public class WandererHit : MonoBehaviour
 
         goalManager = FindObjectOfType<GoalManager>();
         movementAnimator = GetComponent<WandererMovementAnimator>();
-
-        if (movementAnimator == null)
-        {
-            Debug.LogError("❌ No WandererMovementAnimator found on wanderer!");
-        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Projectile"))
+        if (collision.gameObject.CompareTag("Projectile") && !isHandlingHit)
         {
             Debug.Log("💥 Wanderer hit by projectile!");
             StartCoroutine(HandleHit());
@@ -38,7 +33,7 @@ public class WandererHit : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Projectile"))
+        if (other.CompareTag("Projectile") && !isHandlingHit)
         {
             Debug.Log("💥 Wanderer hit by projectile (trigger)!");
             StartCoroutine(HandleHit());
@@ -47,7 +42,7 @@ public class WandererHit : MonoBehaviour
 
     private IEnumerator HandleHit()
     {
-        Debug.Log("🎬 HandleHit started");
+        isHandlingHit = true;
 
         // Flash red
         if (rend != null)
@@ -57,25 +52,27 @@ public class WandererHit : MonoBehaviour
         if (movementAnimator != null)
         {
             movementAnimator.TriggerFall();
-        }
-        else
-        {
-            Debug.LogError("❌ No movementAnimator in HandleHit!");
+            Debug.Log("🔄 Playing fall animation before respawn");
         }
 
-        // Wait for fall animation
-        yield return new WaitForSeconds(fallAnimationTime);
+        // Wait for flash duration
+        yield return new WaitForSeconds(flashDuration);
 
         // Reset color
         if (rend != null)
             rend.material.color = originalColor;
 
-        // Trigger respawn
+        // Wait for fall animation to complete
+        yield return new WaitUntil(() => movementAnimator.IsFallAnimationComplete());
+
+        Debug.Log("🎯 Fall animation complete, now respawning");
+
+        // NOW trigger respawn after fall animation completes
         if (goalManager != null)
             goalManager.ResetPhase();
         else
             Debug.LogError("❌ GoalManager not found!");
 
-        Debug.Log("🎬 HandleHit completed");
+        isHandlingHit = false;
     }
 }
