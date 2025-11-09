@@ -1,15 +1,16 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
 public class WandererHit : MonoBehaviour
 {
     public float flashDuration = 0.25f;
     public Color hitColor = Color.red;
+    public float fallAnimationTime = 1.0f;
 
     private Renderer rend;
     private Color originalColor;
-    private Coroutine flashCoroutine;
     private GoalManager goalManager;
+    private WandererMovementAnimator movementAnimator;
 
     private void Awake()
     {
@@ -18,48 +19,63 @@ public class WandererHit : MonoBehaviour
             originalColor = rend.material.color;
 
         goalManager = FindObjectOfType<GoalManager>();
+        movementAnimator = GetComponent<WandererMovementAnimator>();
+
+        if (movementAnimator == null)
+        {
+            Debug.LogError("❌ No WandererMovementAnimator found on wanderer!");
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Check if the collision is with a projectile
         if (collision.gameObject.CompareTag("Projectile"))
         {
             Debug.Log("💥 Wanderer hit by projectile!");
-
-            if (flashCoroutine != null) StopCoroutine(flashCoroutine);
-            flashCoroutine = StartCoroutine(FlashRoutine());
-
-            if (goalManager != null)
-                goalManager.ResetPhase();
-            else
-                Debug.LogError("❌ GoalManager not found!");
+            StartCoroutine(HandleHit());
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // Also check for trigger collisions (in case projectiles use triggers)
         if (other.CompareTag("Projectile"))
         {
             Debug.Log("💥 Wanderer hit by projectile (trigger)!");
-
-            if (flashCoroutine != null) StopCoroutine(flashCoroutine);
-            flashCoroutine = StartCoroutine(FlashRoutine());
-
-            if (goalManager != null)
-                goalManager.ResetPhase();
-            else
-                Debug.LogError("❌ GoalManager not found!");
+            StartCoroutine(HandleHit());
         }
     }
 
-    private IEnumerator FlashRoutine()
+    private IEnumerator HandleHit()
     {
-        if (rend == null) yield break;
+        Debug.Log("🎬 HandleHit started");
 
-        rend.material.color = hitColor;
-        yield return new WaitForSeconds(flashDuration);
-        rend.material.color = originalColor;
+        // Flash red
+        if (rend != null)
+            rend.material.color = hitColor;
+
+        // Trigger fall animation
+        if (movementAnimator != null)
+        {
+            movementAnimator.TriggerFall();
+        }
+        else
+        {
+            Debug.LogError("❌ No movementAnimator in HandleHit!");
+        }
+
+        // Wait for fall animation
+        yield return new WaitForSeconds(fallAnimationTime);
+
+        // Reset color
+        if (rend != null)
+            rend.material.color = originalColor;
+
+        // Trigger respawn
+        if (goalManager != null)
+            goalManager.ResetPhase();
+        else
+            Debug.LogError("❌ GoalManager not found!");
+
+        Debug.Log("🎬 HandleHit completed");
     }
 }

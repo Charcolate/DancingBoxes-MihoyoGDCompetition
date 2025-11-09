@@ -8,6 +8,7 @@ TagManager:
   - Cylinder
   - Wanderer
   - Ghost
+  - PauseCanvas
   layers:
   - Default
   - TransparentFX

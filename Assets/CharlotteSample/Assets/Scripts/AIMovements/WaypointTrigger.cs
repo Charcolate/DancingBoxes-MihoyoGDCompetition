@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class WaypointTrigger : MonoBehaviour
 {
@@ -230,21 +231,42 @@ public class WaypointTrigger : MonoBehaviour
             Debug.Log($"💥💥💥 TRIGGERING RESPAWN - No cylinders in waypoint!");
             hasTriggeredRespawn = true;
 
-            if (goalManager != null)
-            {
-                goalManager.OnWandererInWaypointWithoutCylinders(GetComponent<Collider>());
-            }
-            else if (goals != null)
-            {
-                goals.OnWandererInWaypointWithoutCylinders(GetComponent<Collider>());
-            }
-            else
-            {
-                Debug.LogError($"❌ No goal system connected - cannot trigger respawn!");
-            }
+            // Trigger fall animation before respawn
+            StartCoroutine(TriggerFallAndRespawn());
         }
     }
 
+    private IEnumerator TriggerFallAndRespawn()
+    {
+        // Get the wanderer's movement animator
+        Transform currentWanderer = Wanderer;
+        if (currentWanderer != null)
+        {
+            WandererMovementAnimator movementAnimator = currentWanderer.GetComponent<WandererMovementAnimator>();
+            if (movementAnimator != null)
+            {
+                movementAnimator.TriggerFall();
+                Debug.Log("🔄 Playing fall animation (no cylinders in waypoint)");
+
+                // Wait for fall animation to complete
+                yield return new WaitForSeconds(1.0f);
+            }
+        }
+
+        // Trigger respawn after fall animation
+        if (goalManager != null)
+        {
+            goalManager.OnWandererInWaypointWithoutCylinders(GetComponent<Collider>());
+        }
+        else if (goals != null)
+        {
+            goals.OnWandererInWaypointWithoutCylinders(GetComponent<Collider>());
+        }
+        else
+        {
+            Debug.LogError($"❌ No goal system connected - cannot trigger respawn!");
+        }
+    }
     // Clean up destroyed objects
     private void FixedUpdate()
     {
