@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 19176ba9f7d616342b9c1f2a624ce6f0, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -1352,6 +1352,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 762842082}
   m_CullTransparentMesh: 1
+--- !u!1001 &1050388592
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 8110915641279300700, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 334.38
+      objectReference: {fileID: 0}
+    - target: {fileID: 8110915641279300700, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 127.72
+      objectReference: {fileID: 0}
+    - target: {fileID: 8110915641279300700, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -203.61
+      objectReference: {fileID: 0}
+    - target: {fileID: 8110915641279300700, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.36171156
+      objectReference: {fileID: 0}
+    - target: {fileID: 8110915641279300700, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8110915641279300700, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.93229014
+      objectReference: {fileID: 0}
+    - target: {fileID: 8110915641279300700, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8110915641279300700, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8110915641279300700, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -137.589
+      objectReference: {fileID: 0}
+    - target: {fileID: 8110915641279300700, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8918273374135557862, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+      propertyPath: m_Name
+      value: TUTseele_Animations 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
 --- !u!1 &1098822184
 GameObject:
   m_ObjectHideFlags: 0
@@ -1840,6 +1897,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wanderer 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4323998587119756078, guid: bd5cc4c444867c4468bbfed56e36db59, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2016,9 +2077,17 @@ MonoBehaviour:
   standingHeight: 10
   restrictionPlane: {fileID: 1517963703}
   planeOffset: 0.2
+  qUI: {fileID: 0}
+  wUI: {fileID: 0}
+  eUI: {fileID: 0}
+  rUI: {fileID: 0}
+  tUI: {fileID: 0}
   screenTintMaterial: {fileID: 0}
   qTintColor: {r: 1, g: 0, b: 0, a: 0.11764706}
   wTintColor: {r: 1, g: 0.5, b: 0, a: 0.11764706}
+  eTintColor: {r: 1, g: 1, b: 0, a: 0.3}
+  rTintColor: {r: 0, g: 1, b: 0, a: 0.3}
+  tTintColor: {r: 0, g: 0, b: 1, a: 0.3}
   defaultTintColor: {r: 1, g: 1, b: 1, a: 0}
 --- !u!4 &1508621027
 Transform:
@@ -2101,7 +2170,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: e19dad788161f7e4fbf1edc1ce466bb0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2443,6 +2512,7 @@ MonoBehaviour:
   sphereCenter: {fileID: 0}
   sphereRadius: 10
   maxRespawnsPerBigPhase: 3
+  phaseCameraManager: {fileID: 0}
   showWaypointsGizmos: 1
   showSphereGizmo: 1
   waypointSphereSize: 0.3
@@ -2484,3 +2554,4 @@ SceneRoots:
   - {fileID: 1239176737}
   - {fileID: 723764226}
   - {fileID: 1353129709}
+  - {fileID: 1050388592}

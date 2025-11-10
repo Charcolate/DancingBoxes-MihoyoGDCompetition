@@ -41,7 +41,7 @@ public class Projectile : MonoBehaviour
         if (projectileCollider == null)
         {
             projectileCollider = gameObject.AddComponent<SphereCollider>();
-            Debug.Log("🔵 Added SphereCollider to projectile");
+            Debug.Log("Added SphereCollider to projectile");
         }
 
         // Make sure collider is NOT a trigger so it can physically interact with cylinders
@@ -53,7 +53,7 @@ public class Projectile : MonoBehaviour
             rb.isKinematic = false; // We need physics for reflection
             rb.useGravity = false;
             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-            Debug.Log("🔵 Added Rigidbody to projectile");
+            Debug.Log("Added Rigidbody to projectile");
         }
 
         // Set the projectile tag
@@ -141,7 +141,7 @@ public class Projectile : MonoBehaviour
             trailRenderer.emitting = true;
         }
 
-        Debug.Log($"🎯 Projectile target: {baseTargetPos} -> {targetPos} (height offset: {targetHeightOffset})");
+        Debug.Log($"Projectile target: {baseTargetPos} -> {targetPos} (height offset: {targetHeightOffset})");
     }
 
     void Update()
@@ -151,7 +151,7 @@ public class Projectile : MonoBehaviour
             // Check if we should destroy after ghost movement is complete
             if (shouldDestroyAfterGhostMovement && !IsInGhostPhase())
             {
-                Debug.Log("👻 Ghost movement finished - destroying projectile");
+                Debug.Log("Ghost movement finished - destroying projectile");
                 Destroy(gameObject);
             }
             return;
@@ -187,13 +187,13 @@ public class Projectile : MonoBehaviour
         }
         else
         {
-            Debug.Log($"🚫 Projectile passed through trigger collider: {collision.gameObject.name}");
+            Debug.Log($"Projectile passed through trigger collider: {collision.gameObject.name}");
         }
     }
 
     private void HandleCollision(GameObject collidedObject, Vector3 collisionNormal)
     {
-        Debug.Log($"💥 Projectile collided with non-trigger: {collidedObject.name}");
+        Debug.Log($" Projectile collided with non-trigger: {collidedObject.name}");
 
         // Stop movement immediately for ALL non-trigger collisions
         isMoving = false;
@@ -210,7 +210,7 @@ public class Projectile : MonoBehaviour
         // Handle cylinder reflection during wanderer phase
         if (isCylinder && canReflectOffCylinders && !IsInGhostPhase())
         {
-            Debug.Log($"🛡️ Projectile reflected off cylinder during wanderer phase: {collidedObject.name}");
+            Debug.Log($"Projectile reflected off cylinder during wanderer phase: {collidedObject.name}");
 
             // Calculate reflection direction
             Vector3 reflectDirection = Vector3.Reflect(currentDirection, collisionNormal).normalized;
@@ -223,21 +223,21 @@ public class Projectile : MonoBehaviour
             isMoving = true;
             hasReachedDestination = false;
 
-            Debug.Log($"   Reflection: {currentDirection} at speed {moveSpeed}");
+            Debug.Log($"Reflection: {currentDirection} at speed {moveSpeed}");
             return;
         }
 
         // GHOST PHASE: Wait for ghost to finish moving before destroying
         if (IsInGhostPhase())
         {
-            Debug.Log($"👻 Ghost phase - Projectile stopped, waiting for ghost movement to finish");
+            Debug.Log($"Ghost phase - Projectile stopped, waiting for ghost movement to finish");
 
             if (destroyOnCollision)
             {
                 // Mark for destruction after ghost phase ends
                 shouldDestroyAfterGhostMovement = true;
                 collisionCollider = collidedObject.GetComponent<Collider>();
-                Debug.Log("⏳ Projectile marked for destruction after ghost movement");
+                Debug.Log("Projectile marked for destruction after ghost movement");
             }
             return;
         }
@@ -245,13 +245,13 @@ public class Projectile : MonoBehaviour
         // WANDERER PHASE: Immediate destruction logic
         if (destroyOnCollision)
         {
-            Debug.Log("💥 Wanderer projectile hit target - destroying immediately");
+            Debug.Log("Wanderer projectile hit target - destroying immediately");
             Destroy(gameObject);
         }
         else
         {
             // For ghost projectiles during wanderer phase, just stop moving
-            Debug.Log("👻 Ghost projectile hit target - stopping movement");
+            Debug.Log("Ghost projectile hit target - stopping movement");
         }
     }
 

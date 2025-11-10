@@ -3,52 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\assets\\charlottesample\\assets\\scripts\\aimovements\\goalmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|c:\\users\\ccfun\\documents\\github\\dancingboxes-mihoyogdcompetition\\assets\\charlottesample\\assets\\scripts\\aimovements\\goalmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|solutionrelative:assets\\charlottesample\\assets\\scripts\\aimovements\\goalmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\assets\\charlottesample\\assets\\scripts\\lightsmovements\\spheresample.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|solutionrelative:assets\\charlottesample\\assets\\scripts\\lightsmovements\\spheresample.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\assets\\charlottesample\\assets\\scripts\\lightsmovements\\collidercontroller_newinput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|solutionrelative:assets\\charlottesample\\assets\\scripts\\lightsmovements\\collidercontroller_newinput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\assets\\charlottesample\\assets\\scripts\\aimovements\\waypointtrigger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|solutionrelative:assets\\charlottesample\\assets\\scripts\\aimovements\\waypointtrigger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\assets\\charlottesample\\assets\\scripts\\aimovements\\wandererhit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|solutionrelative:assets\\charlottesample\\assets\\scripts\\aimovements\\wandererhit.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\assets\\charlottesample\\assets\\scripts\\aimovements\\wanderermovementanimator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|solutionrelative:assets\\charlottesample\\assets\\scripts\\aimovements\\wanderermovementanimator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\assets\\charlottesample\\assets\\scripts\\aimovements\\projectile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|solutionrelative:assets\\charlottesample\\assets\\scripts\\aimovements\\projectile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\assets\\charlottesample\\assets\\scripts\\aimovements\\phasedataclasses.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|solutionrelative:assets\\charlottesample\\assets\\scripts\\aimovements\\phasedataclasses.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\assets\\charlottesample\\assets\\scripts\\aimovements\\projectilespawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|solutionrelative:assets\\charlottesample\\assets\\scripts\\aimovements\\projectilespawner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\assets\\charlottesample\\assets\\scripts\\ui\\mainmenumanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|solutionrelative:assets\\charlottesample\\assets\\scripts\\ui\\mainmenumanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GhostMovementAnimator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{08F2EB55-FDF7-1FF2-0DB2-4B8D82915BB0}|Assembly-CSharp.csproj|solutionrelative:Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GhostMovementAnimator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -63,149 +23,28 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "SphericalCameraFollow.cs",
-              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs",
-              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs",
-              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs",
-              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs",
-              "ViewState": "AgIAAK0AAAAAAAAAAAAqwNIAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-09T07:55:54.888Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ColliderController_NewInput.cs",
-              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\ColliderController_NewInput.cs",
-              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\ColliderController_NewInput.cs",
-              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\ColliderController_NewInput.cs",
-              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\ColliderController_NewInput.cs",
-              "ViewState": "AgIAABUBAAAAAAAAAAAuwDsBAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-09T06:46:41.819Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
               "Title": "GoalManager.cs",
               "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GoalManager.cs",
               "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GoalManager.cs",
               "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GoalManager.cs",
               "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GoalManager.cs",
-              "ViewState": "AgIAAAEFAAAAAAAAAAAwwCYFAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAHsBAAAAAAAAAAAgwIoBAABNAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-09T01:25:02.466Z",
+              "WhenOpened": "2025-11-10T06:34:19.906Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "GhostMovementAnimator.cs",
-              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GhostMovementAnimator.cs",
-              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GhostMovementAnimator.cs",
-              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GhostMovementAnimator.cs",
-              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\GhostMovementAnimator.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAJAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "SphericalCameraFollow.cs",
+              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs",
+              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs",
+              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs",
+              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\SphericalCameraFollow.cs",
+              "ViewState": "AgIAAF0AAAAAAAAAAAAwwIIAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-09T04:11:57.633Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "WandererMovementAnimator.cs",
-              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WandererMovementAnimator.cs",
-              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WandererMovementAnimator.cs",
-              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WandererMovementAnimator.cs",
-              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WandererMovementAnimator.cs",
-              "ViewState": "AgIAAEgAAAAAAAAAAAAIwF8AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-09T01:25:07.965Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "SphereSample.cs",
-              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\SphereSample.cs",
-              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\SphereSample.cs",
-              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\SphereSample.cs",
-              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\lightsMovements\\SphereSample.cs",
-              "ViewState": "AgIAAOwAAAAAAAAAAAAswBABAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-09T01:25:02.455Z",
+              "WhenOpened": "2025-11-10T06:27:57.837Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "WaypointTrigger.cs",
-              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WaypointTrigger.cs",
-              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WaypointTrigger.cs",
-              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WaypointTrigger.cs",
-              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WaypointTrigger.cs",
-              "ViewState": "AgIAAO4AAAAAAAAAAAAuwA4BAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-09T01:25:02.46Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "WandererHit.cs",
-              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WandererHit.cs",
-              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WandererHit.cs",
-              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WandererHit.cs",
-              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\WandererHit.cs",
-              "ViewState": "AgIAACkAAAAAAAAAAAAwwE0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-09T01:25:02.464Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Projectile.cs",
-              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\Projectile.cs",
-              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\Projectile.cs",
-              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\Projectile.cs",
-              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\Projectile.cs",
-              "ViewState": "AgIAABoBAAAAAAAAAAAiwCIBAAAJAAAAAAAAAA==",
-              "Icon": "00000000-0000-0000-0000-000000000000.000000|iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAN3SURBVEhL7VRBaxtnEH3zrWw5siy7iSUHKlmlcuRgkVSkqSGXNqZgu2DqJnjXl95y68WgHNqj/0BUfOklBJdCoVk5pIVA4pKD00tJoaWHSBQjxam1TlRtbbO24mRl7UwPsowSaG\u002B9tHm37\u002BO9me\u002B9\u002BRjgFf7zIABYfbwartQq4cXiIu4/uY\u002BtWgWDwUHoJ3RMD3/owvFbyWTSbYmu/XItrHlayOl1rLnknLuwuuDvdfxRT\u002BvYuXTmkt3eQAEAa6yzj00wmxpgQinTU2Sypkzmjmy9qx5rFxFEZ83LBnYDMQA4KJ4liN7OAwAfAHxXvBnZ5/1Ud0c3YsHoSp3r\u002BaG\u002BhLHtbofvrN8mhvjbRcu/L0cAGaJG8/7Wxl2/JpQAEGnnoRXR24tvzQc7gp\u002BdHXjH6uvs\u002BxyadofZy645D89t1Mq2EhjGyY\u002BrlVol/HV\u002BEU/cPz4BZFKEMkpJkUEJgmQhtNzj7/5i5GgaQQTtpdklWwGAVbNQdIrWg60HGUUdZmgnZLEnl0tOMbf5/E9U6lsgiE4KJvvIBGAAFCUlVxhkHhSPATBYyFSAqXzQ0YqoznW4Xt39aePH0vLs3daQiqmrwzmlqKChUSWSggiWpOn7PQhSAH1PgA2hfgAGCHkRvicQkJLCYUSvLfTMi0AnZmM78zTfyu/v8DL/6EJwpOkES9tzu/PtXNV\u002B\u002BDfwjw5SV4fPK0UpDQ1z7synqce16vmvfvsS1b1KMyJCDoANwWFEAV/g3un\u002BNEKdwZXrF26s\u002BACgy9cFjXz\u002B1LFU4t0fxqqVWmUnEopEb6/dmnm6XxsTRSvsqZQi0QkABGEAIYhMCMgliB\u002BgEAQpgoqQAMywAawoAEj2ncSpY6eip/vTVxpo6JFQJMrsZeM9bxhHtACCCAIKJgkbJGw0Xy6WaJQhZkOEMiApg5AjYcNjGHKETLR\u002B0UdDF\u002BE2nvvXnIdDv9o/69auNXJ2YPRcPBQPp8NpW5hwsAJsAJi9qduAuNSQ0jf6jfzMtzOiCbkA7OsXcvkyllspN4c8MThhjw6MFjafbRYeOY8iTt0ZW99dt493Hy9MJ6ZLU8mpwz0EAOOxSXs8/kHp/TcnXQCYen3KnYhPlsZjky/sIbQa\u002BMRnisAQJoNJGZ6QoYgNBowGcaYz3Fl\u002BSWWycGavZ68MAE6vY3nCl6FgvsB7hf8H/gL\u002B2aNVwu31ogAAAABJRU5ErkJggg==",
-              "WhenOpened": "2025-11-09T01:25:02.465Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "PhaseDataClasses.cs",
-              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\PhaseDataClasses.cs",
-              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\PhaseDataClasses.cs",
-              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\PhaseDataClasses.cs",
-              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\PhaseDataClasses.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAiwCYAAAABAAAAAAAAAA==",
-              "Icon": "00000000-0000-0000-0000-000000000000.000000|iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAN3SURBVEhL7VRBaxtnEH3zrWw5siy7iSUHKlmlcuRgkVSkqSGXNqZgu2DqJnjXl95y68WgHNqj/0BUfOklBJdCoVk5pIVA4pKD00tJoaWHSBQjxam1TlRtbbO24mRl7UwPsowSaG\u002B9tHm37\u002BO9me\u002B9\u002BRjgFf7zIABYfbwartQq4cXiIu4/uY\u002BtWgWDwUHoJ3RMD3/owvFbyWTSbYmu/XItrHlayOl1rLnknLuwuuDvdfxRT\u002BvYuXTmkt3eQAEAa6yzj00wmxpgQinTU2Sypkzmjmy9qx5rFxFEZ83LBnYDMQA4KJ4liN7OAwAfAHxXvBnZ5/1Ud0c3YsHoSp3r\u002BaG\u002BhLHtbofvrN8mhvjbRcu/L0cAGaJG8/7Wxl2/JpQAEGnnoRXR24tvzQc7gp\u002BdHXjH6uvs\u002BxyadofZy645D89t1Mq2EhjGyY\u002BrlVol/HV\u002BEU/cPz4BZFKEMkpJkUEJgmQhtNzj7/5i5GgaQQTtpdklWwGAVbNQdIrWg60HGUUdZmgnZLEnl0tOMbf5/E9U6lsgiE4KJvvIBGAAFCUlVxhkHhSPATBYyFSAqXzQ0YqoznW4Xt39aePH0vLs3daQiqmrwzmlqKChUSWSggiWpOn7PQhSAH1PgA2hfgAGCHkRvicQkJLCYUSvLfTMi0AnZmM78zTfyu/v8DL/6EJwpOkES9tzu/PtXNV\u002B\u002BDfwjw5SV4fPK0UpDQ1z7synqce16vmvfvsS1b1KMyJCDoANwWFEAV/g3un\u002BNEKdwZXrF26s\u002BACgy9cFjXz\u002B1LFU4t0fxqqVWmUnEopEb6/dmnm6XxsTRSvsqZQi0QkABGEAIYhMCMgliB\u002BgEAQpgoqQAMywAawoAEj2ncSpY6eip/vTVxpo6JFQJMrsZeM9bxhHtACCCAIKJgkbJGw0Xy6WaJQhZkOEMiApg5AjYcNjGHKETLR\u002B0UdDF\u002BE2nvvXnIdDv9o/69auNXJ2YPRcPBQPp8NpW5hwsAJsAJi9qduAuNSQ0jf6jfzMtzOiCbkA7OsXcvkyllspN4c8MThhjw6MFjafbRYeOY8iTt0ZW99dt493Hy9MJ6ZLU8mpwz0EAOOxSXs8/kHp/TcnXQCYen3KnYhPlsZjky/sIbQa\u002BMRnisAQJoNJGZ6QoYgNBowGcaYz3Fl\u002BSWWycGavZ68MAE6vY3nCl6FgvsB7hf8H/gL\u002B2aNVwu31ogAAAABJRU5ErkJggg==",
-              "WhenOpened": "2025-11-09T01:25:02.466Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "ProjectileSpawner.cs",
-              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\ProjectileSpawner.cs",
-              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\ProjectileSpawner.cs",
-              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\ProjectileSpawner.cs",
-              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\AIMovements\\ProjectileSpawner.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAABAAAAAAAAAA==",
-              "Icon": "00000000-0000-0000-0000-000000000000.000000|iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAN3SURBVEhL7VRBaxtnEH3zrWw5siy7iSUHKlmlcuRgkVSkqSGXNqZgu2DqJnjXl95y68WgHNqj/0BUfOklBJdCoVk5pIVA4pKD00tJoaWHSBQjxam1TlRtbbO24mRl7UwPsowSaG\u002B9tHm37\u002BO9me\u002B9\u002BRjgFf7zIABYfbwartQq4cXiIu4/uY\u002BtWgWDwUHoJ3RMD3/owvFbyWTSbYmu/XItrHlayOl1rLnknLuwuuDvdfxRT\u002BvYuXTmkt3eQAEAa6yzj00wmxpgQinTU2Sypkzmjmy9qx5rFxFEZ83LBnYDMQA4KJ4liN7OAwAfAHxXvBnZ5/1Ud0c3YsHoSp3r\u002BaG\u002BhLHtbofvrN8mhvjbRcu/L0cAGaJG8/7Wxl2/JpQAEGnnoRXR24tvzQc7gp\u002BdHXjH6uvs\u002BxyadofZy645D89t1Mq2EhjGyY\u002BrlVol/HV\u002BEU/cPz4BZFKEMkpJkUEJgmQhtNzj7/5i5GgaQQTtpdklWwGAVbNQdIrWg60HGUUdZmgnZLEnl0tOMbf5/E9U6lsgiE4KJvvIBGAAFCUlVxhkHhSPATBYyFSAqXzQ0YqoznW4Xt39aePH0vLs3daQiqmrwzmlqKChUSWSggiWpOn7PQhSAH1PgA2hfgAGCHkRvicQkJLCYUSvLfTMi0AnZmM78zTfyu/v8DL/6EJwpOkES9tzu/PtXNV\u002B\u002BDfwjw5SV4fPK0UpDQ1z7synqce16vmvfvsS1b1KMyJCDoANwWFEAV/g3un\u002BNEKdwZXrF26s\u002BACgy9cFjXz\u002B1LFU4t0fxqqVWmUnEopEb6/dmnm6XxsTRSvsqZQi0QkABGEAIYhMCMgliB\u002BgEAQpgoqQAMywAawoAEj2ncSpY6eip/vTVxpo6JFQJMrsZeM9bxhHtACCCAIKJgkbJGw0Xy6WaJQhZkOEMiApg5AjYcNjGHKETLR\u002B0UdDF\u002BE2nvvXnIdDv9o/69auNXJ2YPRcPBQPp8NpW5hwsAJsAJi9qduAuNSQ0jf6jfzMtzOiCbkA7OsXcvkyllspN4c8MThhjw6MFjafbRYeOY8iTt0ZW99dt493Hy9MJ6ZLU8mpwz0EAOOxSXs8/kHp/TcnXQCYen3KnYhPlsZjky/sIbQa\u002BMRnisAQJoNJGZ6QoYgNBowGcaYz3Fl\u002BSWWycGavZ68MAE6vY3nCl6FgvsB7hf8H/gL\u002B2aNVwu31ogAAAABJRU5ErkJggg==",
-              "WhenOpened": "2025-11-09T01:25:02.467Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "MainMenuManager.cs",
-              "DocumentMoniker": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\UI\\MainMenuManager.cs",
-              "RelativeDocumentMoniker": "Assets\\CharlotteSample\\Assets\\Scripts\\UI\\MainMenuManager.cs",
-              "ToolTip": "C:\\Users\\ccfun\\Documents\\GitHub\\DancingBoxes-MihoyoGDCompetition\\Assets\\CharlotteSample\\Assets\\Scripts\\UI\\MainMenuManager.cs",
-              "RelativeToolTip": "Assets\\CharlotteSample\\Assets\\Scripts\\UI\\MainMenuManager.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAABAAAAAAAAAA==",
-              "Icon": "00000000-0000-0000-0000-000000000000.000000|iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAN3SURBVEhL7VRBaxtnEH3zrWw5siy7iSUHKlmlcuRgkVSkqSGXNqZgu2DqJnjXl95y68WgHNqj/0BUfOklBJdCoVk5pIVA4pKD00tJoaWHSBQjxam1TlRtbbO24mRl7UwPsowSaG\u002B9tHm37\u002BO9me\u002B9\u002BRjgFf7zIABYfbwartQq4cXiIu4/uY\u002BtWgWDwUHoJ3RMD3/owvFbyWTSbYmu/XItrHlayOl1rLnknLuwuuDvdfxRT\u002BvYuXTmkt3eQAEAa6yzj00wmxpgQinTU2Sypkzmjmy9qx5rFxFEZ83LBnYDMQA4KJ4liN7OAwAfAHxXvBnZ5/1Ud0c3YsHoSp3r\u002BaG\u002BhLHtbofvrN8mhvjbRcu/L0cAGaJG8/7Wxl2/JpQAEGnnoRXR24tvzQc7gp\u002BdHXjH6uvs\u002BxyadofZy645D89t1Mq2EhjGyY\u002BrlVol/HV\u002BEU/cPz4BZFKEMkpJkUEJgmQhtNzj7/5i5GgaQQTtpdklWwGAVbNQdIrWg60HGUUdZmgnZLEnl0tOMbf5/E9U6lsgiE4KJvvIBGAAFCUlVxhkHhSPATBYyFSAqXzQ0YqoznW4Xt39aePH0vLs3daQiqmrwzmlqKChUSWSggiWpOn7PQhSAH1PgA2hfgAGCHkRvicQkJLCYUSvLfTMi0AnZmM78zTfyu/v8DL/6EJwpOkES9tzu/PtXNV\u002B\u002BDfwjw5SV4fPK0UpDQ1z7synqce16vmvfvsS1b1KMyJCDoANwWFEAV/g3un\u002BNEKdwZXrF26s\u002BACgy9cFjXz\u002B1LFU4t0fxqqVWmUnEopEb6/dmnm6XxsTRSvsqZQi0QkABGEAIYhMCMgliB\u002BgEAQpgoqQAMywAawoAEj2ncSpY6eip/vTVxpo6JFQJMrsZeM9bxhHtACCCAIKJgkbJGw0Xy6WaJQhZkOEMiApg5AjYcNjGHKETLR\u002B0UdDF\u002BE2nvvXnIdDv9o/69auNXJ2YPRcPBQPp8NpW5hwsAJsAJi9qduAuNSQ0jf6jfzMtzOiCbkA7OsXcvkyllspN4c8MThhjw6MFjafbRYeOY8iTt0ZW99dt493Hy9MJ6ZLU8mpwz0EAOOxSXs8/kHp/TcnXQCYen3KnYhPlsZjky/sIbQa\u002BMRnisAQJoNJGZ6QoYgNBowGcaYz3Fl\u002BSWWycGavZ68MAE6vY3nCl6FgvsB7hf8H/gL\u002B2aNVwu31ogAAAABJRU5ErkJggg==",
-              "WhenOpened": "2025-11-09T01:25:02.468Z"
             }
           ]
         }

@@ -26,7 +26,7 @@ public class WandererHit : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Projectile") && !isHandlingHit)
         {
-            Debug.Log("💥 Wanderer hit by projectile!");
+            Debug.Log("Wanderer hit by projectile!");
             StartCoroutine(HandleHit());
         }
     }
@@ -35,7 +35,7 @@ public class WandererHit : MonoBehaviour
     {
         if (other.CompareTag("Projectile") && !isHandlingHit)
         {
-            Debug.Log("💥 Wanderer hit by projectile (trigger)!");
+            Debug.Log("Wanderer hit by projectile (trigger)!");
             StartCoroutine(HandleHit());
         }
     }
@@ -52,7 +52,7 @@ public class WandererHit : MonoBehaviour
         if (movementAnimator != null)
         {
             movementAnimator.TriggerFall();
-            Debug.Log("🔄 Playing fall animation before respawn");
+            Debug.Log("Playing fall animation before respawn");
         }
 
         // Wait for flash duration
@@ -65,13 +65,13 @@ public class WandererHit : MonoBehaviour
         // Wait for fall animation to complete
         yield return new WaitUntil(() => movementAnimator.IsFallAnimationComplete());
 
-        Debug.Log("🎯 Fall animation complete, now respawning");
+        Debug.Log("Fall animation complete, now respawning");
 
         // NOW trigger respawn after fall animation completes
         if (goalManager != null)
             goalManager.ResetPhase();
         else
-            Debug.LogError("❌ GoalManager not found!");
+            Debug.LogError("GoalManager not found!");
 
         isHandlingHit = false;
     }

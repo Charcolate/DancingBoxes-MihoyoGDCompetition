@@ -1,211 +1,131 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SphericalCameraFollow : MonoBehaviour
 {
-    [System.Serializable]
-    public class PhaseCamera
-    {
-        public string phaseName;
-        public Transform cameraTransform;
-        [HideInInspector] public float transitionDuration = 2.0f; // Always 2 seconds
-        [HideInInspector] public bool waitForPhaseCompletion = true; // Always wait
-    }
+    [Header("Target")]
+    public Transform target; // The wanderer transform to follow
 
-    [Header("References")]
-    public GoalManager goalManager;
-    public Camera mainCamera;
+    [Header("Camera Settings")]
+    public float height = 15f; // Height above the target
+    public float distance = 8f; // Distance behind the target (if not purely top-down)
+    public Vector3 offset = Vector3.zero; // Additional offset
 
-    [Header("Phase Cameras")]
-    public List<PhaseCamera> phaseCameras = new List<PhaseCamera>();
+    [Header("Follow Settings")]
+    public float smoothSpeed = 5f; // How smoothly the camera follows
+    public bool pureTopDown = true; // If true, camera is directly above looking straight down
 
-    [Header("Settings")]
-    public bool autoCycle = true;
-    private const float TRANSITION_DURATION = 2.0f; // Always 2 seconds
+    [Header("Rotation Settings")]
+    public bool followTargetRotation = false; // Whether to rotate with the target
+    public float rotationSmoothSpeed = 5f; // How smoothly the camera rotates
 
-    private int currentCameraIndex = -1;
-    private int targetCameraIndex = -1;
-    private bool isTransitioning = false;
-    private Vector3 transitionVelocity = Vector3.zero;
+    private Vector3 desiredPosition;
+    private Quaternion desiredRotation;
 
     void Start()
     {
-        if (mainCamera == null)
-            mainCamera = Camera.main;
-
-        if (goalManager == null)
-            goalManager = FindObjectOfType<GoalManager>();
-
-        // Start with first camera if phases exist
-        if (phaseCameras.Count > 0 && goalManager != null)
+        if (target == null)
         {
-            int startPhase = goalManager.GetCurrentSmallPhaseIndex();
-            if (startPhase < phaseCameras.Count)
+            Debug.LogError("TopDownFollowCamera: No target assigned!");
+            return;
+        }
+
+        // Initialize camera position immediately
+        UpdateDesiredPositionAndRotation();
+        transform.position = desiredPosition;
+        transform.rotation = desiredRotation;
+    }
+
+    void LateUpdate()
+    {
+        if (target == null) return;
+
+        UpdateDesiredPositionAndRotation();
+
+        // Smoothly move to desired position
+        transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
+
+        // Smoothly rotate to desired rotation
+        transform.rotation = Quaternion.Lerp(transform.rotation, desiredRotation, rotationSmoothSpeed * Time.deltaTime);
+    }
+
+    void UpdateDesiredPositionAndRotation()
+    {
+        if (pureTopDown)
+        {
+            // Pure top-down: directly above target, looking straight down
+            desiredPosition = target.position + Vector3.up * height + offset;
+            desiredRotation = Quaternion.LookRotation(Vector3.down, Vector3.forward);
+        }
+        else
+        {
+            // Top-down but slightly angled, following target's forward direction
+            Vector3 behindOffset = -target.forward * distance;
+            desiredPosition = target.position + Vector3.up * height + behindOffset + offset;
+
+            if (followTargetRotation)
             {
-                currentCameraIndex = startPhase;
-                targetCameraIndex = startPhase;
-                // Snap immediately to start camera (no transition)
-                SnapToCamera(phaseCameras[startPhase]);
+                // Match target's rotation but maintain top-down angle
+                Vector3 lookDirection = (target.position - desiredPosition).normalized;
+                desiredRotation = Quaternion.LookRotation(lookDirection, Vector3.up);
+            }
+            else
+            {
+                // Standard top-down angled view
+                desiredRotation = Quaternion.LookRotation((target.position - desiredPosition).normalized, Vector3.up);
             }
         }
     }
 
-    void Update()
+    // Public methods to adjust camera settings at runtime
+    public void SetHeight(float newHeight)
     {
-        if (!autoCycle || goalManager == null) return;
-
-        int currentPhase = goalManager.GetCurrentSmallPhaseIndex();
-
-        // Only switch cameras when phase changes AND we're not already transitioning
-        if (currentPhase < phaseCameras.Count && currentPhase != targetCameraIndex && !isTransitioning)
-        {
-            targetCameraIndex = currentPhase;
-            StartCoroutine(TransitionToCamera(phaseCameras[currentPhase]));
-        }
+        height = newHeight;
     }
 
-    private void SnapToCamera(PhaseCamera phaseCamera)
+    public void SetDistance(float newDistance)
     {
-        if (phaseCamera.cameraTransform == null) return;
-
-        mainCamera.transform.position = phaseCamera.cameraTransform.position;
-        mainCamera.transform.rotation = phaseCamera.cameraTransform.rotation;
-
-        Debug.Log($"📸 Snapped to camera: {phaseCamera.phaseName}");
+        distance = newDistance;
     }
 
-    private System.Collections.IEnumerator TransitionToCamera(PhaseCamera phaseCamera)
+    public void SetPureTopDown(bool isPureTopDown)
     {
-        if (phaseCamera.cameraTransform == null || isTransitioning) yield break;
-
-        isTransitioning = true;
-
-        Transform targetTransform = phaseCamera.cameraTransform;
-        float elapsedTime = 0f;
-
-        Vector3 startPosition = mainCamera.transform.position;
-        Quaternion startRotation = mainCamera.transform.rotation;
-
-        Debug.Log($"🎬 Starting 2s transition to: {phaseCamera.phaseName}");
-
-        while (elapsedTime < TRANSITION_DURATION)
-        {
-            float t = elapsedTime / TRANSITION_DURATION;
-
-            // Smooth position transition
-            mainCamera.transform.position = Vector3.Lerp(startPosition, targetTransform.position, t);
-
-            // Smooth rotation transition
-            mainCamera.transform.rotation = Quaternion.Lerp(startRotation, targetTransform.rotation, t);
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        // Ensure exact final position and rotation
-        mainCamera.transform.position = targetTransform.position;
-        mainCamera.transform.rotation = targetTransform.rotation;
-
-        currentCameraIndex = targetCameraIndex;
-        isTransitioning = false;
-
-        Debug.Log($"✅ Completed transition to: {phaseCamera.phaseName}");
+        pureTopDown = isPureTopDown;
     }
 
-    // Called by GoalManager when a phase completes
-    public void OnPhaseCompleted(int phaseIndex)
+    public void SetTarget(Transform newTarget)
     {
-        if (!autoCycle) return;
-
-        int nextPhase = phaseIndex + 1;
-
-        // If we have a camera for the next phase, switch to it
-        if (nextPhase < phaseCameras.Count && !isTransitioning)
-        {
-            targetCameraIndex = nextPhase;
-            StartCoroutine(TransitionToCamera(phaseCameras[nextPhase]));
-        }
-        else if (nextPhase >= phaseCameras.Count)
-        {
-            Debug.Log("🎬 All phase cameras completed!");
-        }
+        target = newTarget;
     }
 
-    // Manual control methods
-    public void SwitchToCamera(string cameraName)
+    // Snap immediately to target (no smooth transition)
+    public void SnapToTarget()
     {
-        for (int i = 0; i < phaseCameras.Count; i++)
-        {
-            if (phaseCameras[i].phaseName == cameraName && !isTransitioning)
-            {
-                targetCameraIndex = i;
-                StartCoroutine(TransitionToCamera(phaseCameras[i]));
-                return;
-            }
-        }
-        Debug.LogWarning($"PhaseCameraManager: Camera with name '{cameraName}' not found or already transitioning!");
+        UpdateDesiredPositionAndRotation();
+        transform.position = desiredPosition;
+        transform.rotation = desiredRotation;
     }
 
-    public void SetAutoCycle(bool enable)
-    {
-        autoCycle = enable;
-    }
-
-    public string GetCurrentCameraName()
-    {
-        if (currentCameraIndex >= 0 && currentCameraIndex < phaseCameras.Count)
-            return phaseCameras[currentCameraIndex].phaseName;
-        return "No Camera";
-    }
-
-    public int GetCurrentCameraIndex()
-    {
-        return currentCameraIndex;
-    }
-
-    public bool IsTransitioning()
-    {
-        return isTransitioning;
-    }
-
-    // Editor helper
-    void OnValidate()
-    {
-        // Ensure phase names are unique and set fixed values
-        HashSet<string> usedNames = new HashSet<string>();
-        for (int i = 0; i < phaseCameras.Count; i++)
-        {
-            if (string.IsNullOrEmpty(phaseCameras[i].phaseName))
-            {
-                phaseCameras[i].phaseName = $"Phase {i}";
-            }
-
-            if (usedNames.Contains(phaseCameras[i].phaseName))
-            {
-                phaseCameras[i].phaseName = $"{phaseCameras[i].phaseName} {i}";
-            }
-            usedNames.Add(phaseCameras[i].phaseName);
-
-            // Force fixed values
-            phaseCameras[i].transitionDuration = TRANSITION_DURATION;
-            phaseCameras[i].waitForPhaseCompletion = true;
-        }
-    }
-
-    // Gizmos to visualize camera positions in scene
+    // Gizmos to visualize camera relationship in scene view
     void OnDrawGizmosSelected()
     {
-        if (phaseCameras == null) return;
+        if (target == null) return;
 
-        Gizmos.color = Color.cyan;
-        foreach (var phaseCamera in phaseCameras)
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(transform.position, target.position);
+        Gizmos.DrawWireSphere(target.position, 0.5f);
+
+        Gizmos.color = Color.blue;
+        if (pureTopDown)
         {
-            if (phaseCamera.cameraTransform != null)
-            {
-                Gizmos.DrawWireSphere(phaseCamera.cameraTransform.position, 0.5f);
-                Gizmos.DrawLine(phaseCamera.cameraTransform.position, phaseCamera.cameraTransform.position + phaseCamera.cameraTransform.forward * 2f);
-            }
+            Vector3 topDownPos = target.position + Vector3.up * height;
+            Gizmos.DrawWireSphere(topDownPos, 0.3f);
+            Gizmos.DrawLine(topDownPos, target.position);
+        }
+        else
+        {
+            Vector3 angledPos = target.position + Vector3.up * height - target.forward * distance;
+            Gizmos.DrawWireSphere(angledPos, 0.3f);
+            Gizmos.DrawLine(angledPos, target.position);
         }
     }
 }

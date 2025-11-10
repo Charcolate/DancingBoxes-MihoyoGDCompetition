@@ -7,6 +7,7 @@ public class PauseManager : MonoBehaviour
 {
     [Header("Scene Names")]
     [SerializeField] private string mainMenuScene = "MM";
+    [SerializeField] private string endingScene = "EndingScene"; // Add your ending scene name here
 
     private GameObject currentPauseMenuUI;
     private bool isPaused = false;
@@ -168,6 +169,7 @@ public class PauseManager : MonoBehaviour
         var continueBtn = FindButton(new string[] { "ContinueButton", "ResumeButton", "Continue", "Resume" });
         var restartBtn = FindButton(new string[] { "RestartButton", "Restart", "ResetButton" });
         var mainMenuBtn = FindButton(new string[] { "MainMenuButton", "MenuButton", "MainMenu", "ToMenu" });
+        var winBtn = FindButton(new string[] { "Win" }); // Specifically looking for "Win" button
         var exitBtn = FindButton(new string[] { "ExitButton", "QuitButton", "Exit", "Quit" });
 
         // Setup button events
@@ -196,6 +198,17 @@ public class PauseManager : MonoBehaviour
             Debug.LogError("Main Menu button NOT found! Check your button names.");
         }
 
+        if (winBtn != null)
+        {
+            winBtn.onClick.RemoveAllListeners();
+            winBtn.onClick.AddListener(GoToEndingScene);
+            Debug.Log("Win button found and setup successfully - will load ending scene");
+        }
+        else
+        {
+            Debug.LogWarning("Win button not found. If you want this feature, make sure you have a button named 'Win' in your pause menu.");
+        }
+
         if (exitBtn != null)
         {
             exitBtn.onClick.RemoveAllListeners();
@@ -204,7 +217,7 @@ public class PauseManager : MonoBehaviour
         }
 
         // Log which buttons were found
-        Debug.Log($"Buttons found - Continue: {continueBtn != null}, Restart: {restartBtn != null}, MainMenu: {mainMenuBtn != null}, Exit: {exitBtn != null}");
+        Debug.Log($"Buttons found - Continue: {continueBtn != null}, Restart: {restartBtn != null}, MainMenu: {mainMenuBtn != null}, Win: {winBtn != null}, Exit: {exitBtn != null}");
     }
 
     private Button FindButton(string[] possibleNames)
@@ -295,13 +308,6 @@ public class PauseManager : MonoBehaviour
     public void ReturnToMainMenu()
     {
         Debug.Log($"Attempting to return to main menu: {mainMenuScene}");
-        Debug.Log($"Available scenes in build settings:");
-        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
-        {
-            string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
-            string sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
-            Debug.Log($"  {i}: {sceneName}");
-        }
 
         // Resume time scale before loading scene
         Time.timeScale = 1f;
@@ -322,13 +328,52 @@ public class PauseManager : MonoBehaviour
         }
     }
 
+    public void GoToEndingScene()
+    {
+        Debug.Log($"Attempting to go to ending scene: {endingScene}");
+
+        // Resume time scale before loading scene
+        Time.timeScale = 1f;
+        isPaused = false;
+
+        // Try loading by name first, then by build index if that fails
+        try
+        {
+            SceneManager.LoadScene(endingScene);
+            Debug.Log($"Loading ending scene by name: {endingScene}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Failed to load scene by name: {endingScene}. Error: {e.Message}");
+            // Fallback: try to find ending scene in build settings
+            bool sceneFound = false;
+            for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+            {
+                string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+                string sceneName = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+                if (sceneName.ToLower().Contains("ending") || sceneName.ToLower().Contains("end"))
+                {
+                    SceneManager.LoadScene(i);
+                    Debug.Log($"Loading ending scene by index: {i} ({sceneName})");
+                    sceneFound = true;
+                    break;
+                }
+            }
+
+            if (!sceneFound)
+            {
+                Debug.LogError("No ending scene found in build settings!");
+            }
+        }
+    }
+
     public void ExitGame()
     {
         Debug.Log("Exiting game...");
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-            Application.Quit();
+        Application.Quit();
 #endif
     }
 

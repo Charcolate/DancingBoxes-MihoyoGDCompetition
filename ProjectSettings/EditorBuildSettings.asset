@@ -26,6 +26,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/CharlotteSample/Assets/Scenes/Final/Game.unity
     guid: 0fa7c0717597dc94c80e1badfae6e0c3
+  - enabled: 1
+    path: Assets/CharlotteSample/Assets/Scenes/Final/End.unity
+    guid: ef2efa5212252b9479b9dc459b4d074e
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

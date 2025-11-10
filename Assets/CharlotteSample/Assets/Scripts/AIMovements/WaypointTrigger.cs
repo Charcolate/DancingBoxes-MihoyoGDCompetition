@@ -50,15 +50,15 @@ public class WaypointTrigger : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log($"🔧 WaypointTrigger started: {gameObject.name} at position {transform.position}");
+        Debug.Log($"WaypointTrigger started: {gameObject.name} at position {transform.position}");
 
         // Log which goal system is active
         if (goalManager != null)
-            Debug.Log($"🎯 Connected to GoalManager (Sphere Movement)");
+            Debug.Log($"Connected to GoalManager (Sphere Movement)");
         else if (goals != null)
-            Debug.Log($"🎯 Connected to Goals (Flat Plane Movement)");
+            Debug.Log($"Connected to Goals (Flat Plane Movement)");
         else
-            Debug.LogError($"❌ WaypointTrigger not connected to any goal system!");
+            Debug.LogError($"WaypointTrigger not connected to any goal system!");
     }
 
     private void OnTriggerEnter(Collider other)
@@ -78,7 +78,7 @@ public class WaypointTrigger : MonoBehaviour
         Transform currentWanderer = Wanderer;
         if (other.CompareTag("Player") || (currentWanderer != null && other.transform == currentWanderer))
         {
-            Debug.Log($"🎯 Wanderer entered waypoint trigger: {gameObject.name}");
+            Debug.Log($"Wanderer entered waypoint trigger: {gameObject.name}");
             wandererIsInTrigger = true;
             hasTriggeredRespawn = false;
 
@@ -89,9 +89,9 @@ public class WaypointTrigger : MonoBehaviour
         // Check if a cylinder entered the trigger
         else if (IsCylinderObject(other.gameObject))
         {
-            Debug.Log($"🔵 Cylinder '{other.gameObject.name}' entered waypoint trigger: {gameObject.name}");
+            Debug.Log($"Cylinder '{other.gameObject.name}' entered waypoint trigger: {gameObject.name}");
             cylindersInTrigger.Add(other.gameObject);
-            Debug.Log($"   Cylinders in trigger now: {cylindersInTrigger.Count}");
+            Debug.Log($"Cylinders in trigger now: {cylindersInTrigger.Count}");
             CheckCylinderPresence();
         }
     }
@@ -104,16 +104,16 @@ public class WaypointTrigger : MonoBehaviour
         Transform currentWanderer = Wanderer;
         if (other.CompareTag("Player") || (currentWanderer != null && other.transform == currentWanderer))
         {
-            Debug.Log($"🎯 Wanderer left waypoint trigger: {gameObject.name}");
+            Debug.Log($"Wanderer left waypoint trigger: {gameObject.name}");
             wandererIsInTrigger = false;
             hasTriggeredRespawn = false;
         }
         // Check if a cylinder left the trigger
         else if (IsCylinderObject(other.gameObject))
         {
-            Debug.Log($"🔵 Cylinder '{other.gameObject.name}' left waypoint trigger: {gameObject.name}");
+            Debug.Log($"Cylinder '{other.gameObject.name}' left waypoint trigger: {gameObject.name}");
             cylindersInTrigger.Remove(other.gameObject);
-            Debug.Log($"   Cylinders in trigger now: {cylindersInTrigger.Count}");
+            Debug.Log($"Cylinders in trigger now: {cylindersInTrigger.Count}");
             CheckCylinderPresence();
         }
     }
@@ -148,7 +148,7 @@ public class WaypointTrigger : MonoBehaviour
             // Check if cylinder is actually still within the trigger bounds
             if (!triggerCollider.bounds.Contains(cylinder.transform.position))
             {
-                Debug.Log($"🔍 MANUAL CHECK: Cylinder '{cylinder.name}' is no longer in trigger bounds!");
+                Debug.Log($"MANUAL CHECK: Cylinder '{cylinder.name}' is no longer in trigger bounds!");
                 cylindersToRemove.Add(cylinder);
             }
         }
@@ -157,12 +157,12 @@ public class WaypointTrigger : MonoBehaviour
         foreach (var cylinder in cylindersToRemove)
         {
             cylindersInTrigger.Remove(cylinder);
-            Debug.Log($"🔵 Removed cylinder '{cylinder?.name}' via manual check");
+            Debug.Log($"Removed cylinder '{cylinder?.name}' via manual check");
         }
 
         if (cylindersToRemove.Count > 0)
         {
-            Debug.Log($"🔍 Manual check completed - Removed {cylindersToRemove.Count} cylinders, {cylindersInTrigger.Count} remaining");
+            Debug.Log($"Manual check completed - Removed {cylindersToRemove.Count} cylinders, {cylindersInTrigger.Count} remaining");
         }
     }
 
@@ -174,7 +174,7 @@ public class WaypointTrigger : MonoBehaviour
         Collider triggerCollider = GetComponent<Collider>();
         if (triggerCollider == null) return;
 
-        Debug.Log($"🔍 Checking for existing cylinders in trigger...");
+        Debug.Log($"Checking for existing cylinders in trigger...");
         int foundCount = 0;
 
         foreach (var cylinder in currentCylinderManager.cylinders)
@@ -189,13 +189,13 @@ public class WaypointTrigger : MonoBehaviour
                     {
                         cylindersInTrigger.Add(cylinder);
                         foundCount++;
-                        Debug.Log($"     ✅ ADDED {cylinder.name} to trigger tracking");
+                        Debug.Log($"ADDED {cylinder.name} to trigger tracking");
                     }
                 }
             }
         }
 
-        Debug.Log($"🔍 Found {foundCount} existing cylinders in trigger");
+        Debug.Log($"Found {foundCount} existing cylinders in trigger");
     }
 
     private bool IsCylinderObject(GameObject obj)
@@ -224,11 +224,11 @@ public class WaypointTrigger : MonoBehaviour
 
         bool cylindersPresent = cylindersInTrigger.Count > 0;
 
-        Debug.Log($"🔍 Cylinder Check - Wanderer: {wandererIsInTrigger}, Cylinders: {cylindersInTrigger.Count}, HasRespawned: {hasTriggeredRespawn}");
+        Debug.Log($"Cylinder Check - Wanderer: {wandererIsInTrigger}, Cylinders: {cylindersInTrigger.Count}, HasRespawned: {hasTriggeredRespawn}");
 
         if (!cylindersPresent)
         {
-            Debug.Log($"💥💥💥 TRIGGERING RESPAWN - No cylinders in waypoint!");
+            Debug.Log($"TRIGGERING RESPAWN - No cylinders in waypoint!");
             hasTriggeredRespawn = true;
 
             // Trigger fall animation before respawn
@@ -246,12 +246,12 @@ public class WaypointTrigger : MonoBehaviour
             if (movementAnimator != null)
             {
                 movementAnimator.TriggerFall();
-                Debug.Log("🔄 Playing fall animation (no cylinders in waypoint)");
+                Debug.Log("Playing fall animation (no cylinders in waypoint)");
 
                 // Wait for fall animation to complete
                 yield return new WaitUntil(() => movementAnimator.IsFallAnimationComplete());
 
-                Debug.Log("🎯 Fall animation complete, now respawning from waypoint");
+                Debug.Log("Fall animation complete, now respawning from waypoint");
             }
         }
 
@@ -266,7 +266,7 @@ public class WaypointTrigger : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"❌ No goal system connected - cannot trigger respawn!");
+            Debug.LogError($"No goal system connected - cannot trigger respawn!");
         }
     }
 
@@ -276,7 +276,7 @@ public class WaypointTrigger : MonoBehaviour
         int removedCount = cylindersInTrigger.RemoveWhere(obj => obj == null);
         if (removedCount > 0)
         {
-            Debug.Log($"🧹 Removed {removedCount} null cylinders from tracking");
+            Debug.Log($"Removed {removedCount} null cylinders from tracking");
         }
     }
 

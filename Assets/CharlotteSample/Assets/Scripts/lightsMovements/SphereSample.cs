@@ -201,23 +201,23 @@ public class SphereSample : MonoBehaviour
         {
             case 0: // Q cylinder - Red tint
                 targetColor = qTintColor;
-                Debug.Log("🔴 Q cylinder active - Red tint applied");
+                Debug.Log("Qcylinder active - Red tint applied");
                 break;
             case 1: // W cylinder - Orange tint
                 targetColor = wTintColor;
-                Debug.Log("🟠 W cylinder active - Orange tint applied");
+                Debug.Log("Wcylinder active - Orange tint applied");
                 break;
             case 2: // E cylinder - Yellow tint
                 targetColor = eTintColor;
-                Debug.Log("🟡 E cylinder active - Yellow tint applied");
+                Debug.Log("Ecylinder active - Yellow tint applied");
                 break;
             case 3: // R cylinder - Green tint
                 targetColor = rTintColor;
-                Debug.Log("🟢 R cylinder active - Green tint applied");
+                Debug.Log("Rcylinder active - Green tint applied");
                 break;
             case 4: // T cylinder - Blue tint
                 targetColor = tTintColor;
-                Debug.Log("🔵 T cylinder active - Blue tint applied");
+                Debug.Log("Tcylinder active - Blue tint applied");
                 break;
         }
 

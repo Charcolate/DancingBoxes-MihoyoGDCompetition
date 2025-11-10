@@ -83,9 +83,6 @@ public class GoalManager : MonoBehaviour
     [Header("Respawn Settings")]
     public int maxRespawnsPerBigPhase = 3;
 
-    [Header("Camera System")]
-    public SphericalCameraFollow phaseCameraManager;
-
     [Header("Gizmos Settings")]
     public bool showWaypointsGizmos = true;
     public bool showSphereGizmo = true;
@@ -281,7 +278,7 @@ public class GoalManager : MonoBehaviour
     {
         if (!sequenceRunning) return;
 
-        Debug.Log($"🎯 Wanderer entered waypoint - starting continuous cylinder monitoring");
+        Debug.Log($"Wanderer entered waypoint - starting continuous cylinder monitoring");
     }
 
     // NEW METHOD: Called when wanderer is in waypoint without cylinders
@@ -289,7 +286,7 @@ public class GoalManager : MonoBehaviour
     {
         if (!sequenceRunning) return;
 
-        Debug.Log($"💥 Wanderer in waypoint without cylinders - triggering immediate respawn!");
+        Debug.Log($"Wanderer in waypoint without cylinders - triggering immediate respawn!");
         ResetPhase();
     }
 
@@ -309,17 +306,10 @@ public class GoalManager : MonoBehaviour
             if (currentSmallPhaseIndex % 5 == 0)
             {
                 bigPhaseStartWandererPos = wanderer.position;
-                Debug.Log($"🔁 Starting new big phase at position: {bigPhaseStartWandererPos}");
+                Debug.Log($"Starting new big phase at position: {bigPhaseStartWandererPos}");
             }
 
-            Debug.Log($"🔁 Starting small phase {currentSmallPhaseIndex + 1} at position: {currentSmallPhaseStartPos}");
-
-            // NOTIFY CAMERA MANAGER - Phase is starting
-            if (phaseCameraManager != null)
-            {
-                // Camera will automatically transition to this phase's camera over 2 seconds
-                phaseCameraManager.OnPhaseCompleted(currentSmallPhaseIndex - 1); // Complete previous phase
-            }
+            Debug.Log($"Starting small phase {currentSmallPhaseIndex + 1} at position: {currentSmallPhaseStartPos}");
 
             // Clear previous phase ghosts and projectiles
             DestroyAllGhosts();
@@ -402,25 +392,19 @@ public class GoalManager : MonoBehaviour
             // Destroy ghosts at the end of the small phase
             DestroyAllGhosts();
 
-            Debug.Log($"✅ Small phase {currentSmallPhaseIndex + 1} completed");
-
-            // NOTIFY CAMERA MANAGER - Phase is complete, ready for next camera
-            if (phaseCameraManager != null)
-            {
-                phaseCameraManager.OnPhaseCompleted(currentSmallPhaseIndex);
-            }
+            Debug.Log($"Small phase {currentSmallPhaseIndex + 1} completed");
 
             currentSmallPhaseIndex++;
 
             if (currentSmallPhaseIndex % 5 == 0)
             {
                 respawnCount = 0;
-                Debug.Log("✅ Big phase completed — respawn accumulation reset.");
+                Debug.Log("Big phase completed — respawn accumulation reset.");
             }
         }
 
         sequenceRunning = false;
-        Debug.Log("🎯 All small phases complete.");
+        Debug.Log("All small phases complete.");
     }
 
     // Method to snap a transform to the sphere surface
@@ -446,7 +430,7 @@ public class GoalManager : MonoBehaviour
     {
         if (ghostPrefab == null)
         {
-            Debug.LogError("❌ Ghost prefab is null!");
+            Debug.LogError("Ghost prefab is null!");
             yield break;
         }
 
@@ -465,7 +449,7 @@ public class GoalManager : MonoBehaviour
 
             if (ghost == null)
             {
-                Debug.LogError("❌ Failed to instantiate ghost!");
+                Debug.LogError("Failed to instantiate ghost!");
                 continue;
             }
 
@@ -486,13 +470,13 @@ public class GoalManager : MonoBehaviour
             // Update the ghostData with the new ghost transform
             ghostData.ghostTransform = ghost.transform;
 
-            Debug.Log($"👻 Spawned ghost '{ghost.name}' at position: {spawnPosition}");
+            Debug.Log($"Spawned ghost '{ghost.name}' at position: {spawnPosition}");
         }
 
         // Small delay to ensure ghosts are properly spawned
         yield return new WaitForSeconds(0.1f);
 
-        Debug.Log($"✅ Successfully spawned {spawnedCount} ghosts for phase");
+        Debug.Log($"Successfully spawned {spawnedCount} ghosts for phase");
     }
 
     // NEW: Method to set up the gold trail renderer
@@ -564,7 +548,7 @@ public class GoalManager : MonoBehaviour
 
         if (removedNulls > 0)
         {
-            Debug.Log($"🧹 Cleaned up {removedNulls} null ghosts from list");
+            Debug.Log($"Cleaned up {removedNulls} null ghosts from list");
         }
 
         foreach (GameObject ghost in spawnedGhosts)
@@ -580,13 +564,13 @@ public class GoalManager : MonoBehaviour
                 }
 
                 Destroy(ghost);
-                Debug.Log("👻 Destroyed ghost");
+                Debug.Log("Destroyed ghost");
             }
         }
         spawnedGhosts.Clear();
         ghostTrails.Clear(); // NEW: Clear trail references
 
-        Debug.Log($"✅ Destroyed all ghosts. List count: {spawnedGhosts.Count}");
+        Debug.Log($"Destroyed all ghosts. List count: {spawnedGhosts.Count}");
     }
 
     protected virtual IEnumerator MoveGhostWithProjectiles(Transform ghost, List<PhaseWaypoint> waypoints, float pauseDuration)
@@ -769,7 +753,7 @@ public class GoalManager : MonoBehaviour
 
     protected virtual IEnumerator MoveWandererWithProjectiles(List<PhaseWaypoint> waypoints, float pauseDuration)
     {
-        Debug.Log($"🎬 Starting wanderer movement with {waypoints?.Count} waypoints");
+        Debug.Log($"Starting wanderer movement with {waypoints?.Count} waypoints");
 
         // START MOVING - Trigger jump animation
         WandererMovementAnimator movementAnimator = wanderer.GetComponent<WandererMovementAnimator>();
@@ -779,7 +763,7 @@ public class GoalManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("❌ No WandererMovementAnimator found on wanderer!");
+            Debug.LogError("No WandererMovementAnimator found on wanderer!");
         }
         // Clear all existing projectile trails when wanderer starts moving
         ClearAllProjectileTrails();
@@ -850,7 +834,7 @@ public class GoalManager : MonoBehaviour
 
                         FireWandererProjectiles(wp, requiredProjectileSpeed);
                         wandererProjectileFired = true;
-                        Debug.Log("🎯 Wanderer projectile fired (no visual)");
+                        Debug.Log("Wanderer projectile fired (no visual)");
                     }
                 }
 
@@ -879,7 +863,7 @@ public class GoalManager : MonoBehaviour
             movementAnimator.StopMoving();
         }
 
-        Debug.Log("🎬 Wanderer movement completed");
+        Debug.Log("Wanderer movement completed");
     }
 
     protected void FireProjectiles(Transform character, PhaseWaypoint wp, float customSpeed = -1f)
@@ -962,7 +946,7 @@ public class GoalManager : MonoBehaviour
             ? wp.customSpawnTransforms
             : new List<Transform> { projectileSpawner.transform };
 
-        Debug.Log($"🎯 Firing WANDERER projectile - should destroy on collision!");
+        Debug.Log($"Firing WANDERER projectile - should destroy on collision!");
 
         foreach (var spawn in spawnTransforms)
         {
@@ -981,13 +965,13 @@ public class GoalManager : MonoBehaviour
                     projectile.showTrajectory = false;
                     // Set to DESTROY on collision
                     projectile.SetTarget(spawn.position, wp.waypointTransform.position, speedToUse, true);
-                    Debug.Log($"🎯 Wanderer projectile created - destroyOnCollision: {projectile.destroyOnCollision}");
+                    Debug.Log($"Wanderer projectile created - destroyOnCollision: {projectile.destroyOnCollision}");
                 }
                 wandererProjectiles.Add(proj);
             }
             else
             {
-                Debug.LogError("🎯 FAILED to spawn wanderer projectile!");
+                Debug.LogError("FAILED to spawn wanderer projectile!");
             }
         }
     }
@@ -1017,7 +1001,7 @@ public class GoalManager : MonoBehaviour
         // Also clean up the general activeProjectiles list
         activeProjectiles.RemoveAll(proj => proj == null);
 
-        Debug.Log("🧹 All ghost projectiles destroyed - small phase complete");
+        Debug.Log("All ghost projectiles destroyed - small phase complete");
     }
 
     protected void ClearProjectiles()
@@ -1082,11 +1066,11 @@ public class GoalManager : MonoBehaviour
 
     public void ResetPhase()
     {
-        Debug.Log("🔄 ResetPhase called!");
+        Debug.Log("ResetPhase called!");
 
         if (!sequenceRunning)
         {
-            Debug.Log("❌ Sequence not running, cannot reset");
+            Debug.Log("Sequence not running, cannot reset");
             return;
         }
 
@@ -1101,8 +1085,8 @@ public class GoalManager : MonoBehaviour
         }
 
         respawnCount++;
-        Debug.Log($"💥 Wanderer hit — respawn count: {respawnCount}");
-        Debug.Log($"📍 Current small phase start position: {currentSmallPhaseStartPos}");
+        Debug.Log($"Wanderer hit — respawn count: {respawnCount}");
+        Debug.Log($"Current small phase start position: {currentSmallPhaseStartPos}");
 
         // Clear trails when resetting phase
         ClearAllProjectileTrails();
@@ -1111,7 +1095,7 @@ public class GoalManager : MonoBehaviour
 
         if (currentSmallPhaseIndex >= smallPhases.Count)
         {
-            Debug.Log("❌ Current phase index out of range");
+            Debug.Log("Current phase index out of range");
             return;
         }
 
@@ -1119,13 +1103,13 @@ public class GoalManager : MonoBehaviour
 
         if (respawnCount < maxRespawnsPerBigPhase)
         {
-            Debug.Log($"🔄 Resetting to current small phase start (respawn {respawnCount}/{maxRespawnsPerBigPhase})");
+            Debug.Log($"Resetting to current small phase start (respawn {respawnCount}/{maxRespawnsPerBigPhase})");
 
             // Reset to CURRENT SMALL PHASE START position, NOT waypoint position
             wanderer.position = currentSmallPhaseStartPos;
             // Ensure wanderer is on sphere surface
             SnapToSphereSurface(wanderer);
-            Debug.Log($"📍 Wanderer reset to small phase start position: {wanderer.position}");
+            Debug.Log($"Wanderer reset to small phase start position: {wanderer.position}");
         }
         else
         {
@@ -1137,16 +1121,16 @@ public class GoalManager : MonoBehaviour
             wanderer.position = bigPhaseStartWandererPos;
             // Ensure wanderer is on sphere surface
             SnapToSphereSurface(wanderer);
-            Debug.Log($"📍 Wanderer reset to big phase start: {wanderer.position}");
+            Debug.Log($"Wanderer reset to big phase start: {wanderer.position}");
 
             // Ghosts will be respawned automatically in RunSequence
-            Debug.Log($"🔁 Respawn limit reached — restarting big phase {currentBigPhaseIndex + 1}");
+            Debug.Log($"Respawn limit reached — restarting big phase {currentBigPhaseIndex + 1}");
         }
 
         StopAllCoroutines();
         StartCoroutine(RunSequence());
 
-        Debug.Log("✅ ResetPhase completed successfully");
+        Debug.Log("ResetPhase completed successfully");
     }
 
     public bool IsSequenceFinished()
