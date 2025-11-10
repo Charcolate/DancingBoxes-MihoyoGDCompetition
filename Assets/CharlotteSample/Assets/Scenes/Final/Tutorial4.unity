@@ -209,7 +209,7 @@ MonoBehaviour:
   gameSceneName: Game
   nextButton: {fileID: 432964029}
   previousButton: {fileID: 655622118}
-  startGameButton: {fileID: 0}
+  startGameButton: {fileID: 499874139}
 --- !u!114 &91549452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,11 +429,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &343571677 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1963340067800798095, guid: bd5cc4c444867c4468bbfed56e36db59, type: 3}
-  m_PrefabInstance: {fileID: 1353129709}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &432964027
 GameObject:
   m_ObjectHideFlags: 0
@@ -1409,6 +1404,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+--- !u!4 &1050388593 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8110915641279300700, guid: c4c8419a9c53c154693c22b11590a59d, type: 3}
+  m_PrefabInstance: {fileID: 1050388592}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1098822184
 GameObject:
   m_ObjectHideFlags: 0
@@ -2480,8 +2480,8 @@ MonoBehaviour:
       customSpawnTransforms:
       - {fileID: 1239176737}
     pauseDuration: 1
-  wanderer: {fileID: 343571677}
-  ghostPrefab: {fileID: 9182676184482366513, guid: 83b0de3c499f7f046a76e6b8139b0443, type: 3}
+  wanderer: {fileID: 1050388593}
+  ghostPrefab: {fileID: 8918273374135557862, guid: 6edb92436e6eb5249939e57cd35e393c, type: 3}
   projectileSpawner: {fileID: 723764225}
   cylinderManager: {fileID: 1508621026}
   moveSpeed: 10
@@ -2503,8 +2503,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GoalManager
   smallPhases: []
-  wanderer: {fileID: 0}
-  ghostPrefab: {fileID: 9182676184482366513, guid: 83b0de3c499f7f046a76e6b8139b0443, type: 3}
+  wanderer: {fileID: 1050388593}
+  ghostPrefab: {fileID: 8918273374135557862, guid: 6edb92436e6eb5249939e57cd35e393c, type: 3}
   projectileSpawner: {fileID: 0}
   cylinderManager: {fileID: 0}
   moveSpeed: 5
@@ -2512,7 +2512,6 @@ MonoBehaviour:
   sphereCenter: {fileID: 0}
   sphereRadius: 10
   maxRespawnsPerBigPhase: 3
-  phaseCameraManager: {fileID: 0}
   showWaypointsGizmos: 1
   showSphereGizmo: 1
   waypointSphereSize: 0.3

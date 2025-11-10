@@ -1777,8 +1777,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GoalManager
   smallPhases: []
-  wanderer: {fileID: 0}
-  ghostPrefab: {fileID: 9182676184482366513, guid: 83b0de3c499f7f046a76e6b8139b0443, type: 3}
+  wanderer: {fileID: 566300014}
+  ghostPrefab: {fileID: 8918273374135557862, guid: 6edb92436e6eb5249939e57cd35e393c, type: 3}
   projectileSpawner: {fileID: 0}
   cylinderManager: {fileID: 0}
   moveSpeed: 5
@@ -1786,7 +1786,6 @@ MonoBehaviour:
   sphereCenter: {fileID: 0}
   sphereRadius: 10
   maxRespawnsPerBigPhase: 3
-  phaseCameraManager: {fileID: 0}
   showWaypointsGizmos: 1
   showSphereGizmo: 1
   waypointSphereSize: 0.3
@@ -3047,9 +3046,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b381c06bb9689c646adb0232ffb0ddc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
-  nextSceneName: Game
-  previousSceneName: Tutorial3
-  gameSceneName: Game
+  nextSceneName: Tutorial4
+  previousSceneName: Tutorial2
+  gameSceneName: 
   nextButton: {fileID: 495333349}
   previousButton: {fileID: 107261983}
   startGameButton: {fileID: 0}
